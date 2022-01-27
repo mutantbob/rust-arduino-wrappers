@@ -29,6 +29,11 @@ int virtual_EthernetClient_available(EthernetClient* that)
     return that->available();
 }
 
+size_t virtual_EthernetClient_write(EthernetClient* that, const uint8_t *buf, size_t size)
+{
+    return that->write(buf, size);
+}
+
 int virtual_EthernetClient_read(EthernetClient* that)
 {
     return that->read();

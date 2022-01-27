@@ -6,6 +6,7 @@ use ethernet::raw::{EthernetClient, EthernetServer};
 use ethernet::{ip_address_4, new_udp};
 use panic_halt as _;
 use rust_arduino_runtime::arduino_main_init;
+use ufmt::uWrite;
 
 fn debug_udp() {
     let mut udp = new_udp(4200);
@@ -70,15 +71,16 @@ fn main() -> ! {
                                 // so you can send a reply
                                 if c == b'\n' && current_line_is_blank {
                                     // send a standard HTTP response header
-                                    client.println(b"HTTP/1.1 200 OK\0");
-                                    client.println(b"Content-Type: text/html\0");
-                                    client.println(b"Connection: close\0"); // the connection will be closed after completion of the response
-                                    client.println(b"Refresh: 5\0"); // refresh the page automatically every 5 sec
-                                    client.println(b"\0");
-                                    client.println(b"<!DOCTYPE HTML>\0");
-                                    client.println(b"<html>\0");
+                                    let _ = ufmt::uwriteln!(&mut client, "HTTP/1.1 200 OK");
+                                    let _ = ufmt::uwriteln!(&mut client, "Content-Type: text/html");
+                                    let _ = ufmt::uwriteln!(&mut client, "Connection: close"); // the connection will be closed after completion of the response
+                                    let _ = ufmt::uwriteln!(&mut client, "Refresh: 5"); // refresh the page automatically every 5 sec
+                                    let _ = ufmt::uwriteln!(&mut client, "");
+                                    let _ = ufmt::uwriteln!(&mut client, "<!DOCTYPE HTML>");
+                                    let _ = ufmt::uwriteln!(&mut client, "<html>");
 
-                                    client.println(b"</html>\0");
+                                    let _ = ufmt::uwriteln!(&mut client, "placeholder");
+                                    let _ = ufmt::uwriteln!(&mut client, "</html>");
                                     break;
                                 }
 

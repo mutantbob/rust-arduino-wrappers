@@ -3,8 +3,8 @@
 pub mod raw;
 
 use core::convert::TryInto;
-use ufmt::{uDisplay,Formatter, uWrite};
-pub use raw::{IPAddress,EthernetServer, EthernetUDP, EthernetClient};
+pub use raw::{EthernetClient, EthernetServer, EthernetUDP, IPAddress};
+use ufmt::{uDisplay, uWrite, Formatter};
 
 pub fn ip_address_4(a: u8, b: u8, c: u8, d: u8) -> IPAddress {
     unsafe { IPAddress::new1(a, b, c, d) }
@@ -105,7 +105,6 @@ impl EthernetServer
             None
         }
     }
-
 }
 
 impl EthernetClient
@@ -128,6 +127,22 @@ impl EthernetClient
     {
         unsafe {
             raw::virtual_EthernetClient_available(self as *mut EthernetClient)
+        }
+    }
+
+    pub fn write(&mut self, buffer: &[u8]) -> Result<(), SocketError> {
+        let n = unsafe {
+            raw::virtual_EthernetClient_write(
+                self as *mut EthernetClient,
+                buffer.as_ptr(),
+                buffer.len().try_into().unwrap(),
+            )
+        };
+        if n == 0 {
+            // what is the error signaling method?  The base method returns a size_t which is unsigned
+            Err(SocketError::new("failed to write to socket"))
+        } else {
+            Ok(())
         }
     }
 
@@ -169,5 +184,23 @@ impl EthernetClient
         unsafe {
             raw::EthernetClient_valid(self as *const EthernetClient)
         }
+    }
+}
+
+pub struct SocketError {
+    pub msg: &'static str,
+}
+impl SocketError {
+    pub fn new(msg: &'static str) -> SocketError {
+        SocketError { msg }
+    }
+}
+
+impl uWrite for EthernetClient {
+    type Error = SocketError;
+
+    fn write_str(&mut self, s: &str) -> Result<(), Self::Error> {
+        let buffer = s.as_bytes();
+        self.write(buffer)
     }
 }

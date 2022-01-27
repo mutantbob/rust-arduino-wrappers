@@ -6,6 +6,7 @@ EthernetServer fabricate_EthernetServer(uint16_t port);
 void virtual_EthernetServer_begin(EthernetServer* that);
 bool virtual_EthernetClient_connected(EthernetClient* that);
 int virtual_EthernetClient_available(EthernetClient* that);
+size_t virtual_EthernetClient_write(EthernetClient* that, const uint8_t *buf, size_t size);
 int virtual_EthernetClient_read(EthernetClient* that);
 size_t virtual_EthernetClient_println(EthernetClient* that, const unsigned char* msg);
 void virtual_EthernetClient_flush(EthernetClient *that);
