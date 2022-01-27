@@ -46,11 +46,16 @@ fn compile_c_ethernet() {
 
     //
 
-    if false {
-        builder.file("src-cpp/ethernet.cpp");
+    builder.file(format!("{}/Dhcp.cpp", &anp_dir));
+    builder.file(format!("{}/Dns.cpp", &anp_dir));
+    if true {
+        let wrapper_c = "src-cpp/ethernet.cpp";
+        println!("cargo:rerun-if-changed={}", wrapper_c);
+        builder.file(wrapper_c);
     } else {
         builder.file(format!("{}/Ethernet.cpp", &anp_dir));
     }
+    builder.file(format!("{}/EthernetClient.cpp", &anp_dir));
     builder.file(format!("{}/EthernetUdp.cpp", &anp_dir));
     builder.file(format!("{}/EthernetServer.cpp", &anp_dir));
     builder.file(format!("{}/socket.cpp", &anp_dir));

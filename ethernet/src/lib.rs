@@ -2,9 +2,8 @@
 
 pub mod raw;
 
-use crate::raw::EthernetUDP;
 use core::convert::TryInto;
-pub use raw::IPAddress;
+pub use raw::{IPAddress,EthernetServer, EthernetUDP, EthernetClient};
 
 pub fn ip_address_4(a: u8, b: u8, c: u8, d: u8) -> IPAddress {
     unsafe { IPAddress::new1(a, b, c, d) }
@@ -53,6 +52,90 @@ impl EthernetUDP {
             let n3 = raw::EthernetUDP_endPacket(this);
 
             n1 as c_uint + n2 + n3 as c_uint
+        }
+    }
+}
+
+
+impl EthernetServer
+{
+    pub fn new(port: u16) -> EthernetServer
+    {
+        unsafe { raw::fabricate_EthernetServer(port) }
+    }
+
+    pub fn begin(&mut self)
+    {
+        unsafe {
+            raw::virtual_EthernetServer_begin(self as *mut EthernetServer)
+        }
+    }
+
+    pub fn available_safe(&mut self) -> Option<EthernetClient>
+    {
+        let rval = unsafe { self.available() };
+        if rval.valid() {
+            Some(rval)
+        } else {
+            None
+        }
+    }
+
+}
+
+impl EthernetClient
+{
+    pub fn available_for_write(&mut self) -> i16
+    {
+        unsafe {
+            raw::virtual_EthernetClient_availableForWrite(self as *mut EthernetClient)
+        }
+    }
+
+    pub fn connected(&mut self) -> bool
+    {
+        unsafe {
+            raw::virtual_EthernetClient_connected(self as *mut EthernetClient)
+        }
+    }
+
+    pub fn available(&mut self) -> i16
+    {
+        unsafe {
+            raw::virtual_EthernetClient_available(self as *mut EthernetClient)
+        }
+    }
+
+    pub fn read(&mut self) -> Option<u8>
+    {
+        unsafe {
+            let rval = raw::virtual_EthernetClient_read(self as *mut EthernetClient);
+            if rval&0xff == rval {
+                Some(rval as u8)
+            } else {
+                None
+            }
+        }
+    }
+
+    pub fn println(&mut self, msg: &[u8]) -> u16
+    {
+        unsafe {
+            raw::virtual_EthernetClient_println(self as *mut EthernetClient, msg.as_ptr())
+        }
+    }
+
+    pub fn stop(&mut self)
+    {
+        unsafe {
+            raw::virtual_EthernetClient_stop(self as *mut EthernetClient)
+        }
+    }
+
+    pub fn valid(&self) ->bool
+    {
+        unsafe {
+            raw::EthernetClient_valid(self as *const EthernetClient)
         }
     }
 }

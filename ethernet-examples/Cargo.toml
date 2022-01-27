@@ -1,0 +1,42 @@
+[package]
+name = "arduino-ethernet-examples"
+version = "0.1.0"
+authors = ["Robert Forsman <thoth950@gmail.com>"]
+edition = "2018"
+
+[[bin]]
+name = "web_server"
+path = "src/web_server.rs"
+#test = false
+#bench = false
+
+[dependencies]
+panic-halt = "0.2.0"
+ufmt = "0.1.0"
+nb = "0.1.2"
+embedded-hal = "*"
+neopixel = { path="../neopixel" }
+avr_delay = { git = "https://github.com/avr-rust/delay" }
+#cstr_core = "*"
+#arduino = "*" # fails E0472
+
+ethernet={path="../ethernet"}
+rust-arduino-runtime = {path="../../rust-arduino-helpers/rust-arduino-runtime"}
+
+[dependencies.arduino-hal]
+git = "https://github.com/rahix/avr-hal"
+rev = "f84c0dff774c2292bc932b670955165161ecc7d1"
+features = ["arduino-uno"]
+
+# Configure the build for minimal size - AVRs have very little program memory
+[profile.dev]
+panic = "abort"
+lto = true
+opt-level = "s"
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+debug = true
+lto = true
+opt-level = "s"

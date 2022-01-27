@@ -68,7 +68,6 @@ pub struct NeoPixelWrapper<PX:NumberedPin>
 }
 
 impl<PX:NumberedPin> NeoPixelWrapper<PX> {
-
     pub fn set_pixel_color_rgb(&mut self, idx: u16, r: u8, g: u8, b: u8) {
         unsafe { self.inner.setPixelColor(idx, r, g, b) }
     }
@@ -77,11 +76,11 @@ impl<PX:NumberedPin> NeoPixelWrapper<PX> {
         unsafe { self.inner.setPixelColor1(idx, r, g, b, w) }
     }
 
-    pub fn set_pixel_color_packed(&mut self, idx: u16, rgb:u32) {
+    pub fn set_pixel_color_packed(&mut self, idx: u16, rgb: u32) {
         unsafe { self.inner.setPixelColor2(idx, rgb) }
     }
 
-    pub fn get_pixel_color(&self, idx:u16) -> u32 {
+    pub fn get_pixel_color(&self, idx: u16) -> u32 {
         unsafe { self.inner.getPixelColor(idx) }
     }
 
@@ -101,20 +100,20 @@ impl<PX:NumberedPin> NeoPixelWrapper<PX> {
         unsafe { self.inner.show(); }
     }
 
-    pub fn color_hsv(hue: u16, saturation: u8, value: u8) -> u32
-    {
-        unsafe {
-            raw::Adafruit_NeoPixel::ColorHSV(hue, saturation, value)
-        }
-    }
-
-    pub fn gamma32(rgb: u32) -> u32 {
-        unsafe {
-            raw::Adafruit_NeoPixel::gamma32(rgb)
-        }
-    }
-
     pub fn reclaim_pin(self) -> Pin<Output, PX> {
         self.pin
+    }
+}
+
+pub fn color_hsv(hue: u16, saturation: u8, value: u8) -> u32
+{
+    unsafe {
+        raw::Adafruit_NeoPixel::ColorHSV(hue, saturation, value)
+    }
+}
+
+pub fn gamma32(rgb: u32) -> u32 {
+    unsafe {
+        raw::Adafruit_NeoPixel::gamma32(rgb)
     }
 }
