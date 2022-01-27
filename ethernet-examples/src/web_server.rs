@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-use arduino_hal::{default_serial, delay_ms, pins};
+use arduino_hal::{default_serial, pins, Adc};
 use ethernet::raw::{EthernetClient, EthernetServer};
 use ethernet::{ip_address_4, new_udp};
 use panic_halt as _;
@@ -14,6 +14,13 @@ fn debug_udp() {
     udp.send_to(ip_address_4(192, 168, 8, 107), 3500, &mut [4, 2, 0]);
 }
 
+pub fn report_analog_pin<W>(val: u16, pin_number: u8, stream: &mut W) -> Result<(), W::Error>
+where
+    W: uWrite,
+{
+    ufmt::uwrite!(stream, "analog input {} os {}<br />\n", pin_number, val)
+}
+
 #[arduino_hal::entry]
 fn main() -> ! {
     arduino_main_init();
@@ -24,6 +31,15 @@ fn main() -> ! {
 
     //let mut pins = arduino_hal::Pins::new(dp.PORTB, dp.PORTC, dp.PORTD);
     let mut serial = default_serial!(dp, pins, 115200);
+
+    let mut adc = Adc::new(dp.ADC, Default::default());
+
+    let a0 = pins.a0.into_analog_input(&mut adc);
+    let a1 = pins.a1.into_analog_input(&mut adc);
+    let a2 = pins.a2.into_analog_input(&mut adc);
+    let a3 = pins.a3.into_analog_input(&mut adc);
+    let a4 = pins.a4.into_analog_input(&mut adc);
+    let a5 = pins.a5.into_analog_input(&mut adc);
 
     ufmt::uwriteln!(&mut serial, "Hello from Arduino!\r").unwrap();
 
@@ -79,7 +95,20 @@ fn main() -> ! {
                                     let _ = ufmt::uwriteln!(&mut client, "<!DOCTYPE HTML>");
                                     let _ = ufmt::uwriteln!(&mut client, "<html>");
 
-                                    let _ = ufmt::uwriteln!(&mut client, "placeholder");
+                                    let _ =
+                                        report_analog_pin(a0.analog_read(&mut adc), 0, &mut client);
+                                    let _ =
+                                        report_analog_pin(a1.analog_read(&mut adc), 1, &mut client);
+                                    let _ =
+                                        report_analog_pin(a2.analog_read(&mut adc), 2, &mut client);
+                                    let _ =
+                                        report_analog_pin(a3.analog_read(&mut adc), 3, &mut client);
+                                    let _ =
+                                        report_analog_pin(a4.analog_read(&mut adc), 4, &mut client);
+                                    let _ =
+                                        report_analog_pin(a5.analog_read(&mut adc), 5, &mut client);
+
+                                    //let _ = ufmt::uwriteln!(&mut client, "placeholder");
                                     let _ = ufmt::uwriteln!(&mut client, "</html>");
                                     break;
                                 }
