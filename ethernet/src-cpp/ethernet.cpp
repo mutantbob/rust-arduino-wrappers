@@ -39,6 +39,11 @@ size_t virtual_EthernetClient_println(EthernetClient* that, const unsigned char*
     return that->println((const char *)msg);
 }
 
+void virtual_EthernetClient_flush(EthernetClient *that)
+{
+    that->flush();
+}
+
 void virtual_EthernetClient_stop(EthernetClient *that)
 {
     that->stop();

@@ -3,6 +3,7 @@
 pub mod raw;
 
 use core::convert::TryInto;
+use ufmt::{uDisplay,Formatter, uWrite};
 pub use raw::{IPAddress,EthernetServer, EthernetUDP, EthernetClient};
 
 pub fn ip_address_4(a: u8, b: u8, c: u8, d: u8) -> IPAddress {
@@ -33,6 +34,30 @@ pub fn new_udp(port: u16) -> EthernetUDP {
         );
 
         rval.assume_init()
+    }
+}
+
+pub fn local_ip() -> IPAddress {
+    unsafe {
+        raw::EthernetClass_localIP()
+    }
+}
+
+impl uDisplay for IPAddress
+{
+    fn fmt<W>(&self, formatter:&mut Formatter<W>) -> Result<(), W::Error>
+        where
+            W: uWrite + ?Sized
+    {
+        let x = unsafe { & self._address.bytes};
+        x[0].fmt(formatter)?;
+        '.'.fmt(formatter)?;
+        x[1].fmt(formatter)?;
+        '.'.fmt(formatter)?;
+        x[2].fmt(formatter)?;
+        '.'.fmt(formatter)?;
+        x[3].fmt(formatter)?;
+        Ok(())
     }
 }
 
@@ -122,6 +147,13 @@ impl EthernetClient
     {
         unsafe {
             raw::virtual_EthernetClient_println(self as *mut EthernetClient, msg.as_ptr())
+        }
+    }
+
+    pub fn flush(&mut self)
+    {
+        unsafe {
+            raw::virtual_EthernetClient_flush(self as *mut EthernetClient)
         }
     }
 

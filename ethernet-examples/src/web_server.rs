@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-use arduino_hal::{default_serial, pins};
+use arduino_hal::{default_serial, delay_ms, pins};
 use ethernet::raw::{EthernetClient, EthernetServer};
 use ethernet::{ip_address_4, new_udp};
 use panic_halt as _;
@@ -47,6 +47,7 @@ fn main() -> ! {
         debug_udp();
         let mut ethernet_server = EthernetServer::new(80);
         ethernet_server.begin();
+        let _ = ufmt::uwriteln!(&mut serial, "server is at {}", ethernet::local_ip());
         Some(ethernet_server)
     };
 
@@ -54,19 +55,9 @@ fn main() -> ! {
         if let Some(mut server) = &server {
             let client: Option<EthernetClient> = server.available_safe();
             if let Some(mut client) = client {
+                let _ = ufmt::uwriteln!(&mut serial, "new client");
+
                 let mut current_line_is_blank = false;
-                loop {
-                    if client.available_for_write() > 0 {
-                        client.println(b"orly\0");
-                        break;
-                    }
-                }
-
-                {
-                    let count = client.available();
-                    let _ = ufmt::uwriteln!(&mut serial, "{} bytes available", count);
-                }
-
                 while client.connected() {
                     if client.available() > 0 {
                         let c = client.read();
@@ -100,8 +91,9 @@ fn main() -> ! {
                         }
                     }
                 }
-                let _ = ufmt::uwriteln!(&mut serial, "finished responding, closing");
+                client.flush();
                 client.stop();
+                let _ = ufmt::uwriteln!(&mut serial, "client disconnected");
             }
         }
     }
