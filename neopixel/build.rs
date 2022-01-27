@@ -1,15 +1,15 @@
 extern crate bindgen;
 
 use arduino_build_helpers::ArduinoBuilder;
+use regex::RegexBuilder;
 use std::env;
 use std::error::Error;
-use std::fs::File;
-use std::path::PathBuf;
-use regex::{RegexBuilder};
-use std::io::Write;
 use std::fmt::Write as Write2;
+use std::fs::File;
+use std::io::Write;
+use std::path::PathBuf;
 
-fn main()-> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), Box<dyn Error>> {
     println!("cargo:rerun-if-changed=wrapper.h");
     let bindings = bindgen::Builder::default()
         .header("wrapper.h")
@@ -43,7 +43,7 @@ fn main()-> Result<(), Box<dyn Error>> {
     {
         let gen1 = enum1(code)?;
         let gen2 = enum2(code)?;
-        let out_path =out_path.join("bindings2.rs");
+        let out_path = out_path.join("bindings2.rs");
         //let out_path_str = out_path.to_str()?;
         let mut file = File::create(&out_path)?;
         write!(file, "{}{}", gen1, gen2)?;
@@ -73,18 +73,23 @@ fn main()-> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn enum1(bindings_code: &str) -> Result<String, Box<dyn Error>>
-{
+fn enum1(bindings_code: &str) -> Result<String, Box<dyn Error>> {
     let re = RegexBuilder::new(r"^\s*pub const (NEO_[RGBW]{3,4}): \S+ = (\d+);")
-        .multi_line(true).build()?;
+        .multi_line(true)
+        .build()?;
     let mut rval = String::new();
     let iter = re.captures_iter(bindings_code);
 
     writeln!(rval, "pub enum NeoPixelColorOrder {{")?;
     for rematch in iter {
-
-        let name = rematch.get(1).expect("group 1 missing from NEO_ match").as_str();
-        let val = rematch.get(2).expect("group 2 missing from NEO_ match").as_str();
+        let name = rematch
+            .get(1)
+            .expect("group 1 missing from NEO_ match")
+            .as_str();
+        let val = rematch
+            .get(2)
+            .expect("group 2 missing from NEO_ match")
+            .as_str();
         let val = str::parse::<isize>(val)?;
 
         writeln!(rval, "    {} = {},", name, val)?;
@@ -94,18 +99,23 @@ fn enum1(bindings_code: &str) -> Result<String, Box<dyn Error>>
     Ok(rval)
 }
 
-fn enum2(bindings_code: &str) -> Result<String, Box<dyn Error>>
-{
+fn enum2(bindings_code: &str) -> Result<String, Box<dyn Error>> {
     let re = RegexBuilder::new(r"^\s*pub const (NEO_KHZ\w+): \S+ = (\d+);")
-        .multi_line(true).build()?;
+        .multi_line(true)
+        .build()?;
     let mut rval = String::new();
     let iter = re.captures_iter(bindings_code);
 
     writeln!(rval, "pub enum NeoPixelFrequency {{")?;
     for rematch in iter {
-
-        let name = rematch.get(1).expect("group 1 missing from NEO_ match").as_str();
-        let val = rematch.get(2).expect("group 2 missing from NEO_ match").as_str();
+        let name = rematch
+            .get(1)
+            .expect("group 1 missing from NEO_ match")
+            .as_str();
+        let val = rematch
+            .get(2)
+            .expect("group 2 missing from NEO_ match")
+            .as_str();
         let val = str::parse::<isize>(val)?;
 
         writeln!(rval, "    {} = {},", name, val)?;

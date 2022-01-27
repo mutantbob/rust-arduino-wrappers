@@ -38,18 +38,15 @@ pub fn new_udp(port: u16) -> EthernetUDP {
 }
 
 pub fn local_ip() -> IPAddress {
-    unsafe {
-        raw::EthernetClass_localIP()
-    }
+    unsafe { raw::EthernetClass_localIP() }
 }
 
-impl uDisplay for IPAddress
-{
-    fn fmt<W>(&self, formatter:&mut Formatter<W>) -> Result<(), W::Error>
-        where
-            W: uWrite + ?Sized
+impl uDisplay for IPAddress {
+    fn fmt<W>(&self, formatter: &mut Formatter<W>) -> Result<(), W::Error>
+    where
+        W: uWrite + ?Sized,
     {
-        let x = unsafe { & self._address.bytes};
+        let x = unsafe { &self._address.bytes };
         x[0].fmt(formatter)?;
         '.'.fmt(formatter)?;
         x[1].fmt(formatter)?;
@@ -81,23 +78,16 @@ impl EthernetUDP {
     }
 }
 
-
-impl EthernetServer
-{
-    pub fn new(port: u16) -> EthernetServer
-    {
+impl EthernetServer {
+    pub fn new(port: u16) -> EthernetServer {
         unsafe { raw::fabricate_EthernetServer(port) }
     }
 
-    pub fn begin(&mut self)
-    {
-        unsafe {
-            raw::virtual_EthernetServer_begin(self as *mut EthernetServer)
-        }
+    pub fn begin(&mut self) {
+        unsafe { raw::virtual_EthernetServer_begin(self as *mut EthernetServer) }
     }
 
-    pub fn available_safe(&mut self) -> Option<EthernetClient>
-    {
+    pub fn available_safe(&mut self) -> Option<EthernetClient> {
         let rval = unsafe { self.available() };
         if rval.valid() {
             Some(rval)
@@ -107,27 +97,17 @@ impl EthernetServer
     }
 }
 
-impl EthernetClient
-{
-    pub fn available_for_write(&mut self) -> i16
-    {
-        unsafe {
-            raw::virtual_EthernetClient_availableForWrite(self as *mut EthernetClient)
-        }
+impl EthernetClient {
+    pub fn available_for_write(&mut self) -> i16 {
+        unsafe { raw::virtual_EthernetClient_availableForWrite(self as *mut EthernetClient) }
     }
 
-    pub fn connected(&mut self) -> bool
-    {
-        unsafe {
-            raw::virtual_EthernetClient_connected(self as *mut EthernetClient)
-        }
+    pub fn connected(&mut self) -> bool {
+        unsafe { raw::virtual_EthernetClient_connected(self as *mut EthernetClient) }
     }
 
-    pub fn available(&mut self) -> i16
-    {
-        unsafe {
-            raw::virtual_EthernetClient_available(self as *mut EthernetClient)
-        }
+    pub fn available(&mut self) -> i16 {
+        unsafe { raw::virtual_EthernetClient_available(self as *mut EthernetClient) }
     }
 
     pub fn write(&mut self, buffer: &[u8]) -> Result<(), SocketError> {
@@ -146,11 +126,10 @@ impl EthernetClient
         }
     }
 
-    pub fn read(&mut self) -> Option<u8>
-    {
+    pub fn read(&mut self) -> Option<u8> {
         unsafe {
             let rval = raw::virtual_EthernetClient_read(self as *mut EthernetClient);
-            if rval&0xff == rval {
+            if rval & 0xff == rval {
                 Some(rval as u8)
             } else {
                 None
@@ -158,32 +137,20 @@ impl EthernetClient
         }
     }
 
-    pub fn println(&mut self, msg: &[u8]) -> u16
-    {
-        unsafe {
-            raw::virtual_EthernetClient_println(self as *mut EthernetClient, msg.as_ptr())
-        }
+    pub fn println(&mut self, msg: &[u8]) -> u16 {
+        unsafe { raw::virtual_EthernetClient_println(self as *mut EthernetClient, msg.as_ptr()) }
     }
 
-    pub fn flush(&mut self)
-    {
-        unsafe {
-            raw::virtual_EthernetClient_flush(self as *mut EthernetClient)
-        }
+    pub fn flush(&mut self) {
+        unsafe { raw::virtual_EthernetClient_flush(self as *mut EthernetClient) }
     }
 
-    pub fn stop(&mut self)
-    {
-        unsafe {
-            raw::virtual_EthernetClient_stop(self as *mut EthernetClient)
-        }
+    pub fn stop(&mut self) {
+        unsafe { raw::virtual_EthernetClient_stop(self as *mut EthernetClient) }
     }
 
-    pub fn valid(&self) ->bool
-    {
-        unsafe {
-            raw::EthernetClient_valid(self as *const EthernetClient)
-        }
+    pub fn valid(&self) -> bool {
+        unsafe { raw::EthernetClient_valid(self as *const EthernetClient) }
     }
 }
 
