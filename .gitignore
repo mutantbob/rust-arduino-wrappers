@@ -1,3 +1,4 @@
-Cargo.lock
+ethernet/Cargo.lock
+neopixel/Cargo.lock
 target
 *.iml

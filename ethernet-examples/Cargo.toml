@@ -15,10 +15,6 @@ panic-halt = "0.2.0"
 ufmt = "0.1.0"
 nb = "0.1.2"
 embedded-hal = "*"
-neopixel = { path="../neopixel" }
-avr_delay = { git = "https://github.com/avr-rust/delay" }
-#cstr_core = "*"
-#arduino = "*" # fails E0472
 
 ethernet={path="../ethernet"}
 rust-arduino-runtime = {path="../../rust-arduino-helpers/rust-arduino-runtime"}
