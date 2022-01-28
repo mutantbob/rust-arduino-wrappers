@@ -14,6 +14,16 @@ void virtual_EthernetServer_begin(EthernetServer* that)
 
 //
 
+EthernetClient fabricate_EthernetClient()
+{
+    return EthernetClient();
+}
+
+int virtual_EthernetClient_connect_hostname(EthernetClient* that, const char *host, uint16_t port)
+{
+    return that->connect(host, port);
+}
+
 int virtual_EthernetClient_availableForWrite(EthernetClient* that)
 {
     return that->availableForWrite();
@@ -39,6 +49,11 @@ int virtual_EthernetClient_read(EthernetClient* that)
     return that->read();
 }
 
+int virtual_EthernetClient_readMulti(EthernetClient* that, const uint8_t* buffer, size_t size)
+{
+    return that->read(buffer, size);
+}
+
 size_t virtual_EthernetClient_println(EthernetClient* that, const unsigned char* msg)
 {
     return that->println((const char *)msg);
@@ -57,4 +72,9 @@ void virtual_EthernetClient_stop(EthernetClient *that)
 bool EthernetClient_valid(const EthernetClient *that)
 {
     return *that;
+}
+
+IPAddress virtual_EthernetClient_remoteIP(const EthernetClient *that)
+{
+    return that->remoteIP();
 }

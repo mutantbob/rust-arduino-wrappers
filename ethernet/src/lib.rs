@@ -6,8 +6,35 @@ use core::convert::TryInto;
 pub use raw::{EthernetClient, EthernetServer, EthernetUDP, IPAddress};
 use ufmt::{uDisplay, uWrite, Formatter};
 
+pub enum LinkStatus
+{
+    Unknown,
+    LinkOn,
+    LinkOff,
+    Madness(u16),
+}
+
+impl From<u16> for LinkStatus
+{
+    fn from(raw: u16) -> Self {
+        match raw {
+            raw::EthernetLinkStatus_Unknown => LinkStatus::Unknown,
+            raw::EthernetLinkStatus_LinkON => LinkStatus::LinkOn,
+            raw::EthernetLinkStatus_LinkOFF => LinkStatus::LinkOff,
+            _ => LinkStatus::Madness(raw),
+        }
+    }
+}
+
 pub fn ip_address_4(a: u8, b: u8, c: u8, d: u8) -> IPAddress {
     unsafe { IPAddress::new1(a, b, c, d) }
+}
+
+pub fn begin_dhcp(mac: &mut [u8; 6]) -> i16 {
+    unsafe {
+        let mac_ptr: *mut u8 = mac.as_mut_ptr();
+        raw::EthernetClass::begin(mac_ptr, 60000, 4000)
+    }
 }
 
 pub fn begin_mac(mac: &mut [u8; 6], timeout: u32, response_timeout: u32) -> i16 {
@@ -25,6 +52,19 @@ pub fn begin1(mac: &mut [u8; 6], ip: IPAddress) {
     }
 }
 
+pub fn begin2(mac: &mut [u8; 6], ip: IPAddress, dns: IPAddress) {
+    unsafe {
+        let mac_ptr: *mut u8 = mac.as_mut_ptr();
+        raw::EthernetClass::begin2(mac_ptr, ip, dns)
+    }
+}
+
+pub fn link_status() -> LinkStatus
+{
+    unsafe { raw::EthernetClass::linkStatus().into() }
+}
+
+
 pub fn new_udp(port: u16) -> EthernetUDP {
     let mut rval = ::core::mem::MaybeUninit::uninit();
     unsafe {
@@ -39,6 +79,10 @@ pub fn new_udp(port: u16) -> EthernetUDP {
 
 pub fn local_ip() -> IPAddress {
     unsafe { raw::EthernetClass_localIP() }
+}
+
+pub fn dns_server_ip() -> IPAddress {
+    unsafe { raw::EthernetClass__dnsServerAddress } // stupid inline method
 }
 
 impl uDisplay for IPAddress {
@@ -98,6 +142,23 @@ impl EthernetServer {
 }
 
 impl EthernetClient {
+
+    pub fn new() -> Self {
+        unsafe { raw::fabricate_EthernetClient() }
+    }
+
+    pub fn connect_hostname(host_name: &str, port: u16) -> Result<EthernetClient, i16>
+    {
+        let mut rval = EthernetClient::new();
+
+        let return_code = unsafe { raw::virtual_EthernetClient_connect_hostname(&mut rval as *mut EthernetClient, host_name.as_ptr() as *const i8, port) };
+        if return_code !=0 {
+            Ok(rval)
+        } else {
+            Err(return_code)
+        }
+    }
+
     pub fn available_for_write(&mut self) -> i16 {
         unsafe { raw::virtual_EthernetClient_availableForWrite(self as *mut EthernetClient) }
     }
@@ -137,6 +198,17 @@ impl EthernetClient {
         }
     }
 
+    pub fn read_multi<'a>(&mut self, dest: &'a mut [u8]) -> Result<&'a [u8], SocketError> {
+        let buf = dest.as_ptr();
+        let size = dest.len().try_into().unwrap();
+        let code = unsafe { raw::virtual_EthernetClient_readMulti(self as *mut EthernetClient, buf, size) };
+        if code>0 {
+            Ok(&dest[..(code as usize)])
+        } else {
+            Err(SocketError::new("read returns nothing"))
+        }
+    }
+
     pub fn println(&mut self, msg: &[u8]) -> u16 {
         unsafe { raw::virtual_EthernetClient_println(self as *mut EthernetClient, msg.as_ptr()) }
     }
@@ -151,6 +223,10 @@ impl EthernetClient {
 
     pub fn valid(&self) -> bool {
         unsafe { raw::EthernetClient_valid(self as *const EthernetClient) }
+    }
+
+    pub fn remote_ip(&self) -> IPAddress {
+        unsafe { raw::virtual_EthernetClient_remoteIP(self as *const EthernetClient)}
     }
 }
 

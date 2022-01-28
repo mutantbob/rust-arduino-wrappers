@@ -10,6 +10,10 @@ path = "src/web_server.rs"
 #test = false
 #bench = false
 
+[[bin]]
+name="web_client"
+path = "src/web_client.rs"
+
 [dependencies]
 panic-halt = "0.2.0"
 ufmt = "0.1.0"
