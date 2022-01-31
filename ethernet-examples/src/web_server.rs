@@ -2,17 +2,11 @@
 #![no_main]
 
 use arduino_hal::{default_serial, pins, Adc};
-use ethernet::raw::{EthernetClient, EthernetServer};
-use ethernet::{ip_address_4, new_udp};
+use ethernet::raw::EthernetClient;
+use ethernet::{ip_address_4, EthernetWrapper};
 use panic_halt as _;
 use rust_arduino_runtime::arduino_main_init;
 use ufmt::uWrite;
-
-fn debug_udp() {
-    let mut udp = new_udp(4200);
-
-    udp.send_to(ip_address_4(192, 168, 8, 107), 3500, &mut [4, 2, 0]);
-}
 
 pub fn report_analog_pin<W>(val: u16, pin_number: u8, stream: &mut W) -> Result<(), W::Error>
 where
@@ -52,8 +46,10 @@ fn main() -> ! {
     //
 
     let mut mac = [0xde, 0xad, 0xbe, 0xef, 1, 2];
-    ethernet::begin1(&mut mac, ip_address_4(192, 168, 8, 167));
+    let ethernet = EthernetWrapper::builder(pins.d10.into_output())
+        .static_ip(&mut mac, ip_address_4(192, 168, 8, 167));
 
+    // XXX I really need to figure out the shape of the API I will wrap around hardwareStatus()
     let server = if unsafe { ethernet::raw::EthernetClass_hardwareStatus() }
         == ethernet::raw::EthernetHardwareStatus_EthernetNoHardware
     {
@@ -61,10 +57,8 @@ fn main() -> ! {
         // oof
         None
     } else {
-        debug_udp();
-        let mut ethernet_server = EthernetServer::new(80);
-        ethernet_server.begin();
-        let _ = ufmt::uwriteln!(&mut serial, "server is at {}", ethernet::local_ip());
+        let ethernet_server = ethernet.tcp_listen(80);
+        let _ = ufmt::uwriteln!(&mut serial, "server is at {}", ethernet.local_ip());
         Some(ethernet_server)
     };
 

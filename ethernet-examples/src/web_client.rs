@@ -2,7 +2,7 @@
 #![no_main]
 
 use arduino_hal::{default_serial, delay_ms, pins};
-use ethernet::{ip_address_4, EthernetClient, IPAddress};
+use ethernet::{ip_address_4, EthernetWrapper, IPAddress};
 use panic_halt as _;
 use rust_arduino_runtime::arduino_main_init;
 use ufmt::{uwrite, uwriteln};
@@ -32,31 +32,37 @@ fn main() -> ! {
 
     let mut mac = [0xde, 0xad, 0xbe, 0xef, 1, 2];
 
-    match 1 {
-        1 => ethernet::begin2(&mut mac, fallback_self_ip(), fallback_dns()),
+    let ethernet_builder = EthernetWrapper::builder(pins.d10.into_output());
+    let ethernet = match 1 {
+        1 => ethernet_builder.static_ip_with_dns(&mut mac, fallback_self_ip(), fallback_dns()),
         _ => {
-            if 0 == ethernet::begin_dhcp(&mut mac) {
-                if unsafe { ethernet::raw::EthernetClass_hardwareStatus() }
-                    == ethernet::raw::EthernetHardwareStatus_EthernetNoHardware
-                {
-                    let _ = uwriteln!(
-                        &mut serial,
-                        "Ethernet shield was not found.  Sorry, can't run without hardware. :("
-                    );
-                    // oof
-                    spin_forever()
-                } else {
-                    if let ethernet::LinkStatus::LinkOff = ethernet::link_status() {
-                        let _ = uwriteln!(&mut serial, "Ethernet cable is not connected");
+            let ethernet = ethernet_builder.dhcp_lease(&mut mac, 60_000, 4_000);
+            match ethernet {
+                Err(builder) => {
+                    if unsafe { ethernet::raw::EthernetClass_hardwareStatus() }
+                        == ethernet::raw::EthernetHardwareStatus_EthernetNoHardware
+                    {
+                        let _ = uwriteln!(
+                            &mut serial,
+                            "Ethernet shield was not found.  Sorry, can't run without hardware. :("
+                        );
+                        // oof
+                        spin_forever()
+                    } else {
+                        if let ethernet::LinkStatus::LinkOff = builder.link_status() {
+                            let _ = uwriteln!(&mut serial, "Ethernet cable is not connected");
+                        }
+                        builder.static_ip_with_dns(&mut mac, fallback_self_ip(), fallback_dns())
                     }
-                    ethernet::begin2(&mut mac, fallback_self_ip(), fallback_dns())
                 }
-            } else {
-                let _ = uwriteln!(&mut serial, "DHCP assigned IP {}", ethernet::local_ip());
-                let _ = uwriteln!(&mut serial, "DNS is {}", ethernet::dns_server_ip());
+                Ok(wrapper) => {
+                    let _ = uwriteln!(&mut serial, "DHCP assigned IP {}", wrapper.local_ip());
+                    let _ = uwriteln!(&mut serial, "DNS is {}", wrapper.dns_server_ip());
+                    wrapper
+                }
             }
         }
-    }
+    };
 
     delay_ms(1000);
 
@@ -64,7 +70,7 @@ fn main() -> ! {
 
     let _ = uwriteln!(&mut serial, "connecting to {}...", server_name);
 
-    let client = EthernetClient::connect_hostname(server_name, 80);
+    let client = ethernet.tcp_connect_hostname(server_name, 80);
     match client {
         Err(code) => {
             let _ = uwriteln!(&mut serial, "connection failed: {}", code);

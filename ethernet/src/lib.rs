@@ -2,20 +2,21 @@
 
 pub mod raw;
 
+use avr_hal_generic::port::mode::Output;
+use avr_hal_generic::port::Pin;
 use core::convert::TryInto;
 pub use raw::{EthernetClient, EthernetServer, EthernetUDP, IPAddress};
+use rust_arduino_helpers::NumberedPin;
 use ufmt::{uDisplay, uWrite, Formatter};
 
-pub enum LinkStatus
-{
+pub enum LinkStatus {
     Unknown,
     LinkOn,
     LinkOff,
     Madness(u16),
 }
 
-impl From<u16> for LinkStatus
-{
+impl From<u16> for LinkStatus {
     fn from(raw: u16) -> Self {
         match raw {
             raw::EthernetLinkStatus_Unknown => LinkStatus::Unknown,
@@ -30,59 +31,141 @@ pub fn ip_address_4(a: u8, b: u8, c: u8, d: u8) -> IPAddress {
     unsafe { IPAddress::new1(a, b, c, d) }
 }
 
-pub fn begin_dhcp(mac: &mut [u8; 6]) -> i16 {
-    unsafe {
-        let mac_ptr: *mut u8 = mac.as_mut_ptr();
-        raw::EthernetClass::begin(mac_ptr, 60000, 4000)
+//
+
+pub struct EthernetBuilder<P: NumberedPin> {
+    pin: Pin<Output, P>,
+}
+
+impl<P: NumberedPin> EthernetBuilder<P> {
+    pub fn dhcp_lease(
+        self,
+        mac: &mut [u8; 6],
+        timeout: u32,
+        response_timeout: u32,
+    ) -> Result<EthernetWrapper<P>, EthernetBuilder<P>> {
+        let code = unsafe {
+            let mac_ptr: *mut u8 = mac.as_mut_ptr();
+            raw::EthernetClass::begin(mac_ptr, timeout, response_timeout)
+        };
+        if code == 1 {
+            Ok(self.with_pin())
+        } else {
+            Err(self)
+        }
+    }
+
+    fn with_pin(self) -> EthernetWrapper<P> {
+        unsafe { raw::EthernetClass_init(P::pin_number()) }
+        EthernetWrapper { pin: self.pin }
+    }
+
+    pub fn static_ip(self, mac: &mut [u8; 6], ip: IPAddress) -> EthernetWrapper<P> {
+        unsafe {
+            let mac_ptr: *mut u8 = mac.as_mut_ptr();
+            raw::EthernetClass::begin1(mac_ptr, ip)
+        }
+
+        self.with_pin()
+    }
+
+    pub fn static_ip_with_dns(
+        self,
+        mac: &mut [u8; 6],
+        ip: IPAddress,
+        dns: IPAddress,
+    ) -> EthernetWrapper<P> {
+        unsafe {
+            let mac_ptr: *mut u8 = mac.as_mut_ptr();
+            raw::EthernetClass::begin2(mac_ptr, ip, dns)
+        }
+
+        self.with_pin()
+    }
+
+    pub fn link_status(&self) -> LinkStatus {
+        unsafe { raw::EthernetClass::linkStatus().into() }
     }
 }
 
-pub fn begin_mac(mac: &mut [u8; 6], timeout: u32, response_timeout: u32) -> i16 {
-    unsafe {
-        let mac_ptr: *mut u8 = mac.as_mut_ptr();
+//
 
-        raw::EthernetClass::begin(mac_ptr, timeout, response_timeout)
+pub struct EthernetWrapper<P: NumberedPin> {
+    pin: Pin<Output, P>,
+}
+
+impl<P: NumberedPin> EthernetWrapper<P> {
+    pub fn tcp_listen(&self, port: u16) -> EthernetServer {
+        unsafe {
+            let mut rval = raw::fabricate_EthernetServer(port);
+            raw::virtual_EthernetServer_begin(&mut rval as *mut EthernetServer); // would you ever NOT want to call `.begin()`?
+            rval
+        }
     }
 }
 
-pub fn begin1(mac: &mut [u8; 6], ip: IPAddress) {
-    unsafe {
-        let mac_ptr: *mut u8 = mac.as_mut_ptr();
-        raw::EthernetClass::begin1(mac_ptr, ip)
+impl<P: NumberedPin> EthernetWrapper<P> {
+    /// which pin?
+    ///
+    /// 10: most shields
+    ///
+    /// 5: MKR Eth Shield
+    ///
+    /// 0: Teensy 2.0
+    ///
+    /// 20: Teensy++ 2.0
+    ///
+    /// 15: ESP8266 with Adafruit FeatherWing
+    ///
+    /// 33: ESP32 with Adafruit FeatherWing
+    pub fn builder(pin: Pin<Output, P>) -> EthernetBuilder<P> {
+        EthernetBuilder { pin }
     }
-}
 
-pub fn begin2(mac: &mut [u8; 6], ip: IPAddress, dns: IPAddress) {
-    unsafe {
-        let mac_ptr: *mut u8 = mac.as_mut_ptr();
-        raw::EthernetClass::begin2(mac_ptr, ip, dns)
+    pub fn link_status(&self) -> LinkStatus {
+        unsafe { raw::EthernetClass::linkStatus().into() }
     }
-}
 
-pub fn link_status() -> LinkStatus
-{
-    unsafe { raw::EthernetClass::linkStatus().into() }
-}
+    pub fn new_udp(&self, port: u16) -> EthernetUDP {
+        let mut rval = ::core::mem::MaybeUninit::uninit();
+        unsafe {
+            raw::EthernetUDP_begin(
+                rval.as_mut_ptr() as *mut rust_arduino_runtime::workaround_cty::c_void,
+                port,
+            );
 
-
-pub fn new_udp(port: u16) -> EthernetUDP {
-    let mut rval = ::core::mem::MaybeUninit::uninit();
-    unsafe {
-        raw::EthernetUDP_begin(
-            rval.as_mut_ptr() as *mut rust_arduino_runtime::workaround_cty::c_void,
-            port,
-        );
-
-        rval.assume_init()
+            rval.assume_init()
+        }
     }
-}
 
-pub fn local_ip() -> IPAddress {
-    unsafe { raw::EthernetClass_localIP() }
-}
+    pub fn local_ip(&self) -> IPAddress {
+        unsafe { raw::EthernetClass_localIP() }
+    }
 
-pub fn dns_server_ip() -> IPAddress {
-    unsafe { raw::EthernetClass__dnsServerAddress } // stupid inline method
+    pub fn dns_server_ip(&self) -> IPAddress {
+        unsafe { raw::EthernetClass__dnsServerAddress } // stupid inline method
+    }
+
+    pub fn reclaim_pin(self) -> Pin<Output, P> {
+        self.pin
+    }
+
+    pub fn tcp_connect_hostname(&self, host_name: &str, port: u16) -> Result<EthernetClient, i16> {
+        let mut rval = EthernetClient::new();
+
+        let return_code = unsafe {
+            raw::virtual_EthernetClient_connect_hostname(
+                &mut rval as *mut EthernetClient,
+                host_name.as_ptr() as *const i8,
+                port,
+            )
+        };
+        if return_code != 0 {
+            Ok(rval)
+        } else {
+            Err(return_code)
+        }
+    }
 }
 
 impl uDisplay for IPAddress {
@@ -122,15 +205,8 @@ impl EthernetUDP {
     }
 }
 
+/// To create one of these, use [`EthernetWrapper::tcp_listen`]
 impl EthernetServer {
-    pub fn new(port: u16) -> EthernetServer {
-        unsafe { raw::fabricate_EthernetServer(port) }
-    }
-
-    pub fn begin(&mut self) {
-        unsafe { raw::virtual_EthernetServer_begin(self as *mut EthernetServer) }
-    }
-
     pub fn available_safe(&mut self) -> Option<EthernetClient> {
         let rval = unsafe { self.available() };
         if rval.valid() {
@@ -142,21 +218,8 @@ impl EthernetServer {
 }
 
 impl EthernetClient {
-
-    pub fn new() -> Self {
+    fn new() -> Self {
         unsafe { raw::fabricate_EthernetClient() }
-    }
-
-    pub fn connect_hostname(host_name: &str, port: u16) -> Result<EthernetClient, i16>
-    {
-        let mut rval = EthernetClient::new();
-
-        let return_code = unsafe { raw::virtual_EthernetClient_connect_hostname(&mut rval as *mut EthernetClient, host_name.as_ptr() as *const i8, port) };
-        if return_code !=0 {
-            Ok(rval)
-        } else {
-            Err(return_code)
-        }
     }
 
     pub fn available_for_write(&mut self) -> i16 {
@@ -226,7 +289,7 @@ impl EthernetClient {
     }
 
     pub fn remote_ip(&self) -> IPAddress {
-        unsafe { raw::virtual_EthernetClient_remoteIP(self as *const EthernetClient)}
+        unsafe { raw::virtual_EthernetClient_remoteIP(self as *const EthernetClient) }
     }
 }
 
