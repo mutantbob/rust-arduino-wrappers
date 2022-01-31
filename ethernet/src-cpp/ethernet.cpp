@@ -49,7 +49,7 @@ int virtual_EthernetClient_read(EthernetClient* that)
     return that->read();
 }
 
-int virtual_EthernetClient_readMulti(EthernetClient* that, const uint8_t* buffer, size_t size)
+int virtual_EthernetClient_readMulti(EthernetClient* that, uint8_t* buffer, size_t size)
 {
     return that->read(buffer, size);
 }
@@ -71,10 +71,10 @@ void virtual_EthernetClient_stop(EthernetClient *that)
 
 bool EthernetClient_valid(const EthernetClient *that)
 {
-    return *that;
+    return *(EthernetClient*)that;
 }
 
 IPAddress virtual_EthernetClient_remoteIP(const EthernetClient *that)
 {
-    return that->remoteIP();
+    return ((EthernetClient*)that)->remoteIP();
 }

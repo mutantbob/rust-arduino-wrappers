@@ -262,10 +262,12 @@ impl EthernetClient {
     }
 
     pub fn read_multi<'a>(&mut self, dest: &'a mut [u8]) -> Result<&'a [u8], SocketError> {
-        let buf = dest.as_ptr();
+        let buf = dest.as_mut_ptr();
         let size = dest.len().try_into().unwrap();
-        let code = unsafe { raw::virtual_EthernetClient_readMulti(self as *mut EthernetClient, buf, size) };
-        if code>0 {
+        let code = unsafe {
+            raw::virtual_EthernetClient_readMulti(self as *mut EthernetClient, buf, size)
+        };
+        if code > 0 {
             Ok(&dest[..(code as usize)])
         } else {
             Err(SocketError::new("read returns nothing"))
