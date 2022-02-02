@@ -2,6 +2,7 @@
 
 pub mod raw;
 
+use crate::EthernetInitializationMalfunction::{DhcpFailed, MissingHardware};
 use avr_hal_generic::port::mode::Output;
 use avr_hal_generic::port::Pin;
 use core::convert::TryInto;
@@ -27,8 +28,65 @@ impl From<u16> for LinkStatus {
     }
 }
 
+//
+
+pub enum HardwareStatus {
+    NoHardware,
+    W5100,
+    W5200,
+    W5500,
+    Madness(u16),
+}
+
+impl From<u16> for HardwareStatus {
+    fn from(raw: u16) -> Self {
+        match raw {
+            raw::EthernetHardwareStatus_EthernetNoHardware => HardwareStatus::NoHardware,
+            raw::EthernetHardwareStatus_EthernetW5100 => HardwareStatus::W5100,
+            raw::EthernetHardwareStatus_EthernetW5200 => HardwareStatus::W5200,
+            raw::EthernetHardwareStatus_EthernetW5500 => HardwareStatus::W5500,
+            _ => HardwareStatus::Madness(raw),
+        }
+    }
+}
+
 pub fn ip_address_4(a: u8, b: u8, c: u8, d: u8) -> IPAddress {
     unsafe { IPAddress::new1(a, b, c, d) }
+}
+
+//
+
+pub enum EthernetInitializationMalfunction<P: NumberedPin> {
+    DhcpFailed(EthernetBuilder<P>),
+    LinkOff(EthernetBuilder<P>),
+    MissingHardware(Pin<Output, P>),
+}
+
+impl<P: NumberedPin> core::fmt::Debug for EthernetInitializationMalfunction<P> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            DhcpFailed(_) => f.write_str("DHCP failed"),
+            EthernetInitializationMalfunction::LinkOff(_) => {
+                f.write_str("Link Off (cable unplugged?)")
+            }
+            MissingHardware(_) => f.write_str("Missing ethernet hardware"),
+        }
+    }
+}
+
+impl<P: NumberedPin> ufmt::uDebug for EthernetInitializationMalfunction<P> {
+    fn fmt<W>(&self, f: &mut Formatter<'_, W>) -> Result<(), W::Error>
+    where
+        W: uWrite + ?Sized,
+    {
+        match self {
+            DhcpFailed(_) => f.write_str("DHCP failed"),
+            EthernetInitializationMalfunction::LinkOff(_) => {
+                f.write_str("Link Off (cable unplugged?)")
+            }
+            MissingHardware(_) => f.write_str("Missing ethernet hardware"),
+        }
+    }
 }
 
 //
@@ -43,7 +101,7 @@ impl<P: NumberedPin> EthernetBuilder<P> {
         mac: &mut [u8; 6],
         timeout: u32,
         response_timeout: u32,
-    ) -> Result<EthernetWrapper<P>, EthernetBuilder<P>> {
+    ) -> Result<EthernetWrapper<P>, EthernetInitializationMalfunction<P>> {
         let code = unsafe {
             let mac_ptr: *mut u8 = mac.as_mut_ptr();
             raw::EthernetClass::begin(mac_ptr, timeout, response_timeout)
@@ -51,7 +109,11 @@ impl<P: NumberedPin> EthernetBuilder<P> {
         if code == 1 {
             Ok(self.with_pin())
         } else {
-            Err(self)
+            match self.link_status() {
+                LinkStatus::LinkOn => Err(DhcpFailed(self)),
+                LinkStatus::LinkOff => Err(EthernetInitializationMalfunction::LinkOff(self)),
+                LinkStatus::Unknown | LinkStatus::Madness(_) => Err(MissingHardware(self.pin)),
+            }
         }
     }
 
@@ -60,13 +122,17 @@ impl<P: NumberedPin> EthernetBuilder<P> {
         EthernetWrapper { pin: self.pin }
     }
 
-    pub fn static_ip(self, mac: &mut [u8; 6], ip: IPAddress) -> EthernetWrapper<P> {
+    pub fn static_ip(
+        self,
+        mac: &mut [u8; 6],
+        ip: IPAddress,
+    ) -> Result<EthernetWrapper<P>, EthernetInitializationMalfunction<P>> {
         unsafe {
             let mac_ptr: *mut u8 = mac.as_mut_ptr();
             raw::EthernetClass::begin1(mac_ptr, ip)
         }
 
-        self.with_pin()
+        Ok(self.error_if_no_hardware()?.with_pin())
     }
 
     pub fn static_ip_with_dns(
@@ -74,22 +140,42 @@ impl<P: NumberedPin> EthernetBuilder<P> {
         mac: &mut [u8; 6],
         ip: IPAddress,
         dns: IPAddress,
-    ) -> EthernetWrapper<P> {
+    ) -> Result<EthernetWrapper<P>, EthernetInitializationMalfunction<P>> {
         unsafe {
             let mac_ptr: *mut u8 = mac.as_mut_ptr();
             raw::EthernetClass::begin2(mac_ptr, ip, dns)
         }
 
-        self.with_pin()
+        Ok(self.error_if_no_hardware()?.with_pin())
     }
 
     pub fn link_status(&self) -> LinkStatus {
         unsafe { raw::EthernetClass::linkStatus().into() }
     }
+
+    pub fn hardware_status(&self) -> HardwareStatus {
+        unsafe { raw::EthernetClass::hardwareStatus().into() }
+    }
+
+    pub fn error_if_no_hardware(self) -> Result<Self, EthernetInitializationMalfunction<P>> {
+        match self.hardware_status() {
+            HardwareStatus::NoHardware | HardwareStatus::Madness(_) => {
+                Err(EthernetInitializationMalfunction::MissingHardware(self.pin))
+            }
+            _ => Ok(self),
+        }
+    }
 }
 
 //
 
+/// ```
+/// let dp = arduino_hal::Peripherals::take().unwrap();
+/// let pins = pins!(dp);
+/// let mut mac = [0xde, 0xad, 0xbe, 0xef, 1, 2];
+/// let ethernet = EthernetWrapper::builder(pins.d10.into_output())
+///         .static_ip(&mut mac, ip_address_4(192, 168, 8, 167)) ?;
+/// ```
 pub struct EthernetWrapper<P: NumberedPin> {
     pin: Pin<Output, P>,
 }
@@ -118,8 +204,8 @@ impl<P: NumberedPin> EthernetWrapper<P> {
     /// 15: ESP8266 with Adafruit FeatherWing
     ///
     /// 33: ESP32 with Adafruit FeatherWing
-    pub fn builder(pin: Pin<Output, P>) -> EthernetBuilder<P> {
-        EthernetBuilder { pin }
+    pub fn builder(spi_cs_pin: Pin<Output, P>) -> EthernetBuilder<P> {
+        EthernetBuilder { pin: spi_cs_pin }
     }
 
     pub fn link_status(&self) -> LinkStatus {

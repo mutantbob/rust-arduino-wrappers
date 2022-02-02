@@ -2,7 +2,7 @@
 #![no_main]
 
 use arduino_hal::{default_serial, delay_ms, pins};
-use ethernet::{ip_address_4, EthernetWrapper, IPAddress};
+use ethernet::{ip_address_4, EthernetInitializationMalfunction, EthernetWrapper, IPAddress};
 use panic_halt as _;
 use rust_arduino_runtime::arduino_main_init;
 use ufmt::{uwrite, uwriteln};
@@ -33,26 +33,41 @@ fn main() -> ! {
     let mut mac = [0xde, 0xad, 0xbe, 0xef, 1, 2];
 
     let ethernet_builder = EthernetWrapper::builder(pins.d10.into_output());
-    let ethernet = match 1 {
-        1 => ethernet_builder.static_ip_with_dns(&mut mac, fallback_self_ip(), fallback_dns()),
+    let ethernet: EthernetWrapper<_> = match 1 {
+        1 => ethernet_builder
+            .static_ip_with_dns(&mut mac, fallback_self_ip(), fallback_dns())
+            .unwrap(),
         _ => {
             let ethernet = ethernet_builder.dhcp_lease(&mut mac, 60_000, 4_000);
             match ethernet {
-                Err(builder) => {
-                    if unsafe { ethernet::raw::EthernetClass_hardwareStatus() }
-                        == ethernet::raw::EthernetHardwareStatus_EthernetNoHardware
-                    {
-                        let _ = uwriteln!(
-                            &mut serial,
-                            "Ethernet shield was not found.  Sorry, can't run without hardware. :("
-                        );
-                        // oof
-                        spin_forever()
-                    } else {
-                        if let ethernet::LinkStatus::LinkOff = builder.link_status() {
-                            let _ = uwriteln!(&mut serial, "Ethernet cable is not connected");
+                Err(boom) => {
+                    match boom {
+                        EthernetInitializationMalfunction::DhcpFailed(builder) => {
+                            let _ = uwriteln!(
+                                &mut serial,
+                                "DHCP failed to get an address, going static"
+                            );
+                            builder
+                                .static_ip_with_dns(&mut mac, fallback_self_ip(), fallback_dns())
+                                .unwrap()
                         }
-                        builder.static_ip_with_dns(&mut mac, fallback_self_ip(), fallback_dns())
+                        EthernetInitializationMalfunction::LinkOff(builder) => {
+                            let _ = uwriteln!(
+                                &mut serial,
+                                "Ethernet cable is not connected, going static"
+                            );
+                            builder
+                                .static_ip_with_dns(&mut mac, fallback_self_ip(), fallback_dns())
+                                .unwrap()
+                        }
+                        EthernetInitializationMalfunction::MissingHardware(_) => {
+                            let _ = uwriteln!(
+                                                    &mut serial,
+                                                    "Ethernet shield was not found.  Sorry, can't run without hardware. :("
+                                                );
+                            // oof
+                            spin_forever()
+                        }
                     }
                 }
                 Ok(wrapper) => {
