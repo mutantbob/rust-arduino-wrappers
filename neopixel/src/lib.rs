@@ -36,7 +36,7 @@ impl<PX: NumberedPin> NeoPixelWrapperBuilder<PX> {
         let inner = unsafe {
             Adafruit_NeoPixel::new(
                 led_count,
-                <PX as NumberedPin>::pin_number(),
+                <PX as NumberedPin>::pin_number() as i16,
                 color_order as neoPixelType | frequency as neoPixelType,
             )
         };

@@ -25,7 +25,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         ])
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
         .use_core() // because no_std
-        .ctypes_prefix("rust_arduino_runtime::workaround_cty") // the cty crate won't compile
+        .ctypes_prefix("cty")
         .generate()
         .expect("Unable to generate bindings");
 

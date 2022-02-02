@@ -216,7 +216,7 @@ impl<P: NumberedPin> EthernetWrapper<P> {
         let mut rval = ::core::mem::MaybeUninit::uninit();
         unsafe {
             raw::EthernetUDP_begin(
-                rval.as_mut_ptr() as *mut rust_arduino_runtime::workaround_cty::c_void,
+                rval.as_mut_ptr() as *mut cty::c_void,
                 port,
             );
 
@@ -236,7 +236,7 @@ impl<P: NumberedPin> EthernetWrapper<P> {
         self.pin
     }
 
-    pub fn tcp_connect_hostname(&self, host_name: &str, port: u16) -> Result<EthernetClient, i16> {
+    pub fn tcp_connect_hostname(&self, host_name: &cstr_core::CStr, port: u16) -> Result<EthernetClient, i16> {
         let mut rval = EthernetClient::new();
 
         let return_code = unsafe {
@@ -278,7 +278,7 @@ impl EthernetUDP {
         destination_port: u16,
         payload: &mut [u8],
     ) -> raw::size_t {
-        use rust_arduino_runtime::workaround_cty::*;
+        use cty::*;
         unsafe {
             let this = self as *mut Self as *mut c_void;
             let n1 = raw::EthernetUDP_beginPacket(this, destination_ip, destination_port);

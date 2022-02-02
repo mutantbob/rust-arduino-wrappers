@@ -2,6 +2,7 @@
 #![no_main]
 
 use arduino_hal::{default_serial, delay_ms, pins};
+use cstr_core::cstr;
 use ethernet::{ip_address_4, EthernetInitializationMalfunction, EthernetWrapper, IPAddress};
 use panic_halt as _;
 use rust_arduino_runtime::arduino_main_init;
@@ -81,9 +82,14 @@ fn main() -> ! {
 
     delay_ms(1000);
 
-    let server_name = "www.purplefrog.com\0"; // XXX big problem
+    let server_name = cstr!("www.purplefrog.com");
 
-    let _ = uwriteln!(&mut serial, "connecting to {}...", server_name);
+    //let _ = uwriteln!(&mut serial, "connecting to {}...", server_name);
+    let _ = uwrite!(&mut serial, "connecting to ");
+    for ch in server_name.to_bytes() {
+        let _ = serial.write_byte(*ch);
+    }
+    let _ = uwriteln!(&mut serial, "...");
 
     let client = ethernet.tcp_connect_hostname(server_name, 80);
     match client {

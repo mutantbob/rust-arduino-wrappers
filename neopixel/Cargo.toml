@@ -11,6 +11,7 @@ avr-hal-generic = {git="https://github.com/rahix/avr-hal", rev="f84c0dff774c2292
 #atmega-hal = {git="https://github.com/rahix/avr-hal", rev="f84c0dff774c2292bc932b670955165161ecc7d1", features=["atmega328p"]}
 rust-arduino-helpers = { path="../../rust-arduino-helpers"}
 rust-arduino-runtime = { path="../../rust-arduino-helpers/rust-arduino-runtime"}
+cty={path="../../../vendor/cty"}
 
 [build-dependencies]
 bindgen="*"

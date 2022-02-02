@@ -10,7 +10,9 @@ avr-hal-generic = {git="https://github.com/rahix/avr-hal", rev="f84c0dff774c2292
 rust-arduino-helpers = { path="../../rust-arduino-helpers"}
 rust-arduino-runtime = { path="../../rust-arduino-helpers/rust-arduino-runtime"}
 ufmt = "*"
-#cstr_core = { version="*", features = [  ] }
+cstr_core = { path = "../../../vendor/cstr_core", default-features=false }
+#cstr_core = { version="*", default-features = false }
+cty = { path="../../../vendor/cty" }
 
 [build-dependencies]
 bindgen="*"
