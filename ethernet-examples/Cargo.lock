@@ -21,6 +21,7 @@ dependencies = [
 [[package]]
 name = "arduino-build-helpers"
 version = "0.1.0"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=main#b2d4b1f4202f0000c1e2d520d87c786acd0d4711"
 dependencies = [
  "bindgen",
  "cc",
@@ -205,6 +206,7 @@ dependencies = [
 [[package]]
 name = "cstr_core"
 version = "0.2.5"
+source = "git+https://github.com/mutantbob/cstr_core.git#a9f3f80e37551d241692a59a85909e9c997fecdd"
 dependencies = [
  "cty",
  "memchr 2.4.1 (git+https://github.com/BurntSushi/memchr.git?tag=2.4.1)",
@@ -213,6 +215,7 @@ dependencies = [
 [[package]]
 name = "cty"
 version = "0.2.2"
+source = "git+https://github.com/mutantbob/cty.git?branch=2022-Feb-avr#6963805dfbab979694696ddd5267892a9684e2c3"
 
 [[package]]
 name = "either"
@@ -421,6 +424,7 @@ checksum = "f497285884f3fcff424ffc933e56d7cbca511def0c9831a7f9b5f6153e3cc89b"
 [[package]]
 name = "rust-arduino-helpers"
 version = "0.1.0"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=main#b2d4b1f4202f0000c1e2d520d87c786acd0d4711"
 dependencies = [
  "arduino-hal",
  "atmega-hal",
@@ -433,6 +437,7 @@ dependencies = [
 [[package]]
 name = "rust-arduino-runtime"
 version = "0.1.0"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=main#b2d4b1f4202f0000c1e2d520d87c786acd0d4711"
 dependencies = [
  "arduino-build-helpers",
  "bindgen",

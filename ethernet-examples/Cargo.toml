@@ -19,11 +19,19 @@ panic-halt = "0.2.0"
 ufmt = "0.1.0"
 nb = "0.1.2"
 embedded-hal = "*"
-cstr_core = { path = "../../../vendor/cstr_core", default-features=false }
-#cstr_core = { version = "*", default-features=false }
-
 ethernet={path="../ethernet"}
-rust-arduino-runtime = {path="../../rust-arduino-helpers/rust-arduino-runtime"}
+
+[dependencies.cstr_core]
+#version="*"
+git="https://github.com/mutantbob/cstr_core.git"
+#path="../../../vendor/cstr_core"
+default-features=false
+
+[dependencies.rust-arduino-runtime]
+#path="../../rust-arduino-helpers/rust-arduino-runtime"
+git="https://github.com/mutantbob/rust-arduino-helpers.git"
+path="arduino-build-runtime"
+branch="main"
 
 [dependencies.arduino-hal]
 git = "https://github.com/rahix/avr-hal"
