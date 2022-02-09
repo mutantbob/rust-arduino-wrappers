@@ -1,6 +1,6 @@
 extern crate bindgen;
 
-use arduino_build_helpers::ArduinoBuilder;
+use arduino_build_helpers::{ArduinoBindgen, ArduinoBuilder};
 use regex::RegexBuilder;
 use std::env;
 use std::error::Error;
@@ -13,18 +13,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("cargo:rerun-if-changed=wrapper.h");
     let bindings = bindgen::Builder::default()
         .header("wrapper.h")
-        .clang_args(&[
-            "-I/usr/share/arduino/hardware/arduino/avr/cores/arduino/",
-            "-I/usr/share/arduino/hardware/arduino/avr/variants/standard/",
-            "-I/usr/avr/include",
-            "-D__COMPILING_AVR_LIBC__",
-            "-DF_CPU=16000000L",
-            "-x",
-            "c++",
-            "-mmcu=atmega328p",
-        ])
+        .rig_arduino_uno()
+        .clang_args(&["-I/home/thoth/vendor/Adafruit_NeoPixel/", "-x", "c++"])
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
-        .use_core() // because no_std
         .ctypes_prefix("cty")
         .generate()
         .expect("Unable to generate bindings");
@@ -126,16 +117,3 @@ fn enum2(bindings_code: &str) -> Result<String, Box<dyn Error>> {
 }
 
 // https://github.com/japaric-archived/photon-quickstart/issues/16
-
-/*
-
-execve("/usr/bin/avr-g++", ["/usr/bin/avr-g++", "-c", "-g", "-Os", "-w", "-std=gnu++11",
-"-fpermissive", "-fno-exceptions", "-ffunction-sections", "-fdata-sections", "-fno-threadsafe-statics",
-"-Wno-error=narrowing", "-flto", "-w", "-x", "c++", "-E", "-CC",
-"-mmcu=atmega328p", "-DF_CPU=16000000L", "-DARDUINO=10807", "-DARDUINO_AVR_UNO", "-DARDUINO_ARCH_AVR",
-"-I/usr/share/arduino/hardware/arduino/avr/cores/arduino",
-"-I/usr/share/arduino/hardware/arduino/avr/variants/standard",
-"/tmp/arduino_build_966100/sketch/sketch_jan13a.ino.cpp",
-"-o", "/dev/null"], 0xc00033c000 /* 56 vars */ <unfinished ...>
-
- */

@@ -215,10 +215,7 @@ impl<P: NumberedPin> EthernetWrapper<P> {
     pub fn new_udp(&self, port: u16) -> EthernetUDP {
         let mut rval = ::core::mem::MaybeUninit::uninit();
         unsafe {
-            raw::EthernetUDP_begin(
-                rval.as_mut_ptr() as *mut cty::c_void,
-                port,
-            );
+            raw::EthernetUDP_begin(rval.as_mut_ptr() as *mut cty::c_void, port);
 
             rval.assume_init()
         }
@@ -236,7 +233,11 @@ impl<P: NumberedPin> EthernetWrapper<P> {
         self.pin
     }
 
-    pub fn tcp_connect_hostname(&self, host_name: &cstr_core::CStr, port: u16) -> Result<EthernetClient, i16> {
+    pub fn tcp_connect_hostname(
+        &self,
+        host_name: &cstr_core::CStr,
+        port: u16,
+    ) -> Result<EthernetClient, i16> {
         let mut rval = EthernetClient::new();
 
         let return_code = unsafe {

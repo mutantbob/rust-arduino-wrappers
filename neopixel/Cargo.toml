@@ -18,7 +18,6 @@ branch="main"
 [dependencies.rust-arduino-runtime]
 #path="../../rust-arduino-helpers/rust-arduino-runtime"
 git="https://github.com/mutantbob/rust-arduino-helpers.git"
-path="arduino-build-runtime"
 branch="main"
 
 [dependencies.cty]
@@ -33,7 +32,6 @@ regex = "*"
 [build-dependencies.arduino-build-helpers]
 #path="../../rust-arduino-helpers/arduino-build-helpers"
 git="https://github.com/mutantbob/rust-arduino-helpers.git"
-path="arduino-build-helpers"
 branch="main"
 
 [lib]

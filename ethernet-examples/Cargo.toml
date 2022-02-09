@@ -30,7 +30,6 @@ default-features=false
 [dependencies.rust-arduino-runtime]
 #path="../../rust-arduino-helpers/rust-arduino-runtime"
 git="https://github.com/mutantbob/rust-arduino-helpers.git"
-path="arduino-build-runtime"
 branch="main"
 
 [dependencies.arduino-hal]
