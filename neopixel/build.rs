@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let bindings = bindgen::Builder::default()
         .header("wrapper.h")
         .rig_arduino_uno()
-        .clang_args(&["-I/home/thoth/vendor/Adafruit_NeoPixel/", "-x", "c++"])
+        .clang_args(&["-I../submodules/Adafruit_NeoPixel/", "-x", "c++"])
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
         .ctypes_prefix("cty")
         .generate()
