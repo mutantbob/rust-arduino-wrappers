@@ -49,7 +49,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     //
 
     {
-        let anp_dir = format!("{}/vendor/Adafruit_NeoPixel", env!("HOME"));
+        let anp_dir = "../submodules/Adafruit_NeoPixel";
         //let avr_tool_include = format!("{}/vendor/arduino-1.0.5/hardware/tools/avr/lib/avr/include", env!("HOME"));
 
         let mut builder = cc::Build::new();

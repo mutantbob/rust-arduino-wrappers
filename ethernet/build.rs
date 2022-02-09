@@ -6,22 +6,25 @@ fn spi_include_dir() -> String {
     format!("{}/libraries/SPI/src", arduino_include_root())
 }
 
-fn generate_bindings_rs() {
-    let ethernet_git_src = format!("{}/vendor/Ethernet/src", env::var("HOME").unwrap());
+fn ethernet_git_src() -> &'static str {
+    "../submodules/Ethernet/src"
+}
 
+fn generate_bindings_rs() {
     let wrapper_h = "src-cpp/wrapper.h";
     println!("cargo:rerun-if-changed={}", wrapper_h);
     let bindings = bindgen::Builder::default()
         .header(wrapper_h)
         .rig_arduino_uno()
         .clang_args(&[
-            &format!("-I{}", ethernet_git_src),
+            &format!("-I{}", ethernet_git_src()),
             &format!("-I{}", spi_include_dir()),
             "-x",
             "c++",
         ])
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
-        .ctypes_prefix("rust_arduino_runtime::workaround_cty") // the cty crate won't compile
+        .ctypes_prefix("rust_arduino_runtime::workaround_cty")
+        // .ctypes_prefix("cty") // using this causes `undefined reference` link errors
         .generate()
         .expect("Unable to generate bindings");
 
@@ -33,7 +36,7 @@ fn generate_bindings_rs() {
 }
 
 fn compile_c_ethernet() {
-    let anp_dir = format!("{}/vendor/Ethernet/src", env!("HOME"));
+    let anp_dir = ethernet_git_src();
     //let avr_tool_include = format!("{}/vendor/arduino-1.0.5/hardware/tools/avr/lib/avr/include", env!("HOME"));
 
     let mut builder = cc::Build::new();
