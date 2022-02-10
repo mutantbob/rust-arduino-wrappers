@@ -65,8 +65,8 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn enum1(bindings_code: &str) -> Result<String, Box<dyn Error>> {
-    let re = RegexBuilder::new(r"^\s*pub const (NEO_[RGBW]{3,4}): \S+ = (\d+);")
-        .multi_line(true)
+    let re = RegexBuilder::new(r"\s*pub\s+const\s+(NEO_[RGBW]{3,4})\s*:\s*\S+\s*=\s*(\d+)\s*;")
+        //.multi_line(true) // debian seems to squish them
         .build()?;
     let mut rval = String::new();
     let iter = re.captures_iter(bindings_code);
@@ -91,8 +91,8 @@ fn enum1(bindings_code: &str) -> Result<String, Box<dyn Error>> {
 }
 
 fn enum2(bindings_code: &str) -> Result<String, Box<dyn Error>> {
-    let re = RegexBuilder::new(r"^\s*pub const (NEO_KHZ\w+): \S+ = (\d+);")
-        .multi_line(true)
+    let re = RegexBuilder::new(r"\s*pub\s+const\s+(NEO_KHZ\w+)\s*:\s*\S+\s*=\s*(\d+)\s*;")
+        //.multi_line(true)
         .build()?;
     let mut rval = String::new();
     let iter = re.captures_iter(bindings_code);
