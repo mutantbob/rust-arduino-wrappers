@@ -74,6 +74,11 @@ bool EthernetClient_valid(const EthernetClient *that)
     return *(EthernetClient*)that;
 }
 
+Client* cast_to_Client(EthernetClient *that)
+{
+    return (Client*)that;
+}
+
 IPAddress virtual_EthernetClient_remoteIP(const EthernetClient *that)
 {
     return ((EthernetClient*)that)->remoteIP();

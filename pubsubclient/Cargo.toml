@@ -1,0 +1,30 @@
+[package]
+name = "pubsubclient"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ethernet = { path = "../ethernet" }
+
+[dependencies.rust-arduino-runtime]
+#path="../../rust-arduino-helpers/rust-arduino-runtime"
+git="https://github.com/mutantbob/rust-arduino-helpers.git"
+branch="main"
+
+[dependencies.cstr_core]
+#version="*"
+git="https://github.com/mutantbob/cstr_core.git"
+#path="../../../vendor/cstr_core"
+default-features=false
+
+
+[build-dependencies]
+bindgen="*"
+cc="*"
+
+[build-dependencies.arduino-build-helpers]
+#path="../../rust-arduino-helpers/arduino-build-helpers"
+git="https://github.com/mutantbob/rust-arduino-helpers.git"
+branch="main"

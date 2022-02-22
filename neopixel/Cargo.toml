@@ -36,4 +36,4 @@ branch="main"
 
 [lib]
 #crate-type=["staticlib"]
-crate-type=["rlib"]
+#crate-type=["rlib"]

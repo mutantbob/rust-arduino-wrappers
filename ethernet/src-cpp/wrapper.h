@@ -18,4 +18,6 @@ void virtual_EthernetClient_flush(EthernetClient *that);
 void virtual_EthernetClient_stop(EthernetClient *that);
 bool EthernetClient_valid(const EthernetClient *that);
 int virtual_EthernetClient_availableForWrite(EthernetClient* that);
+Client* cast_to_Client(EthernetClient *that);
+
 IPAddress virtual_EthernetClient_remoteIP(const EthernetClient *that);

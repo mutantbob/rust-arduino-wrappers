@@ -6,7 +6,7 @@ use crate::EthernetInitializationMalfunction::{DhcpFailed, MissingHardware};
 use avr_hal_generic::port::mode::Output;
 use avr_hal_generic::port::Pin;
 use core::convert::TryInto;
-pub use raw::{EthernetClient, EthernetServer, EthernetUDP, IPAddress};
+pub use raw::{Client, EthernetClient, EthernetServer, EthernetUDP, IPAddress};
 use rust_arduino_helpers::NumberedPin;
 use ufmt::{uDisplay, uWrite, Formatter};
 
@@ -253,6 +253,10 @@ impl<P: NumberedPin> EthernetWrapper<P> {
             Err(return_code)
         }
     }
+
+    pub fn make_client(&self) -> EthernetClient {
+        EthernetClient::new()
+    }
 }
 
 impl uDisplay for IPAddress {
@@ -379,6 +383,18 @@ impl EthernetClient {
 
     pub fn remote_ip(&self) -> IPAddress {
         unsafe { raw::virtual_EthernetClient_remoteIP(self as *const EthernetClient) }
+    }
+
+    pub fn as_client_pointer(&self) -> *const Client {
+        unsafe {
+            // too lazy to create a second method for const
+            raw::cast_to_Client(self as *const EthernetClient as *mut EthernetClient)
+                as *const Client
+        }
+    }
+
+    pub fn as_client_mut_pointer(&mut self) -> *mut Client {
+        unsafe { raw::cast_to_Client(self as *mut EthernetClient) }
     }
 }
 
