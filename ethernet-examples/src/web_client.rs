@@ -3,9 +3,10 @@
 
 use arduino_hal::{default_serial, delay_ms, pins};
 use cstr_core::cstr;
-use ethernet::{ip_address_4, EthernetInitializationMalfunction, EthernetWrapper, IPAddress};
+use ethernet::{EthernetInitializationMalfunction, EthernetWrapper, IPAddress};
 use panic_halt as _;
 use rust_arduino_runtime::arduino_main_init;
+use rust_arduino_runtime::ip_address::ip_address_4;
 use ufmt::{uwrite, uwriteln};
 
 fn fallback_self_ip() -> IPAddress {

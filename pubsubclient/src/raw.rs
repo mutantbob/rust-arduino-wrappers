@@ -2,6 +2,7 @@
 #![allow(dead_code)]
 #![allow(clippy::all)]
 
+use rust_arduino_runtime::boolean;
 use rust_arduino_runtime::client::Client;
 use rust_arduino_runtime::ip_address::IPAddress;
 use rust_arduino_runtime::stream::Stream;

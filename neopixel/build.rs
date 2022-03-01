@@ -1,5 +1,6 @@
 extern crate bindgen;
 
+use arduino_build_helpers::exclude_some_headers::{suppressed_headers, BlocklistFileMulti};
 use arduino_build_helpers::{ArduinoBindgen, ArduinoBuilder};
 use regex::RegexBuilder;
 use std::env;
@@ -17,6 +18,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .clang_args(&["-I../submodules/Adafruit_NeoPixel/", "-x", "c++"])
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
         .ctypes_prefix("cty")
+        .blocklist_file_multi(suppressed_headers())
         .generate()
         .expect("Unable to generate bindings");
 

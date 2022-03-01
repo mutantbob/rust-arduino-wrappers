@@ -1,10 +1,7 @@
-use arduino_build_helpers::{arduino_include_root, ArduinoBindgen, ArduinoBuilder};
+use arduino_build_helpers::exclude_some_headers::{suppressed_headers, BlocklistFileMulti};
+use arduino_build_helpers::{spi_include_dir, ArduinoBindgen, ArduinoBuilder};
 use std::env;
 use std::path::PathBuf;
-
-fn spi_include_dir() -> String {
-    format!("{}/libraries/SPI/src", arduino_include_root())
-}
 
 fn ethernet_git_src() -> &'static str {
     "../submodules/Ethernet/src"
@@ -25,12 +22,7 @@ fn generate_bindings_rs() {
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
         .ctypes_prefix("rust_arduino_runtime::workaround_cty")
         // .ctypes_prefix("cty") // using this causes `undefined reference` link errors
-        .blocklist_file(format!(
-            "{}/cores/arduino/IPAddress.h",
-            arduino_include_root()
-        ))
-        .blocklist_file(format!("{}/cores/arduino/Client.h", arduino_include_root()))
-        .blocklist_file(format!("{}/cores/arduino/Stream.h", arduino_include_root()))
+        .blocklist_file_multi(suppressed_headers())
         .generate()
         .expect("Unable to generate bindings");
 

@@ -3,9 +3,10 @@
 
 use arduino_hal::{default_serial, delay_ms, pins, Adc};
 use ethernet::raw::EthernetClient;
-use ethernet::{ip_address_4, EthernetWrapper};
+use ethernet::EthernetWrapper;
 use panic_halt as _;
 use rust_arduino_runtime::arduino_main_init;
+use rust_arduino_runtime::ip_address::ip_address_4;
 use ufmt::uWrite;
 
 pub fn report_analog_pin<W>(val: u16, pin_number: u8, stream: &mut W) -> Result<(), W::Error>

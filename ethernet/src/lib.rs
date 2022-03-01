@@ -123,7 +123,7 @@ impl<P: NumberedPin> EthernetBuilder<P> {
     pub fn static_ip(
         self,
         mac: &mut [u8; 6],
-        ip: IPAddress,
+        ip: rust_arduino_runtime::ip_address::IPAddress,
     ) -> Result<EthernetWrapper<P>, EthernetInitializationMalfunction<P>> {
         unsafe {
             let mac_ptr: *mut u8 = mac.as_mut_ptr();
