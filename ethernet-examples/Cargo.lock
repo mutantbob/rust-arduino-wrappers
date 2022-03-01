@@ -21,7 +21,7 @@ dependencies = [
 [[package]]
 name = "arduino-build-helpers"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=main#b2d4b1f4202f0000c1e2d520d87c786acd0d4711"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=main#95584405a9e89a0c8093542a2c6c7c76e7238c8f"
 dependencies = [
  "bindgen",
  "cc",
@@ -110,6 +110,15 @@ dependencies = [
  "paste",
  "ufmt",
  "void",
+]
+
+[[package]]
+name = "avr-progmem"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c132b5cb3bb60774763e02c965e7f8959a7f225e22291ada078968887fe8248c"
+dependencies = [
+ "cfg-if 0.1.10",
 ]
 
 [[package]]
@@ -424,7 +433,7 @@ checksum = "f497285884f3fcff424ffc933e56d7cbca511def0c9831a7f9b5f6153e3cc89b"
 [[package]]
 name = "rust-arduino-helpers"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=main#b2d4b1f4202f0000c1e2d520d87c786acd0d4711"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=main#95584405a9e89a0c8093542a2c6c7c76e7238c8f"
 dependencies = [
  "arduino-hal",
  "atmega-hal",
@@ -437,12 +446,14 @@ dependencies = [
 [[package]]
 name = "rust-arduino-runtime"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=main#b2d4b1f4202f0000c1e2d520d87c786acd0d4711"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=main#95584405a9e89a0c8093542a2c6c7c76e7238c8f"
 dependencies = [
  "arduino-build-helpers",
+ "avr-progmem",
  "bindgen",
  "cc",
  "cty",
+ "ufmt",
 ]
 
 [[package]]

@@ -25,6 +25,12 @@ fn generate_bindings_rs() {
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
         .ctypes_prefix("rust_arduino_runtime::workaround_cty")
         // .ctypes_prefix("cty") // using this causes `undefined reference` link errors
+        .blocklist_file(format!(
+            "{}/cores/arduino/IPAddress.h",
+            arduino_include_root()
+        ))
+        .blocklist_file(format!("{}/cores/arduino/Client.h", arduino_include_root()))
+        .blocklist_file(format!("{}/cores/arduino/Stream.h", arduino_include_root()))
         .generate()
         .expect("Unable to generate bindings");
 

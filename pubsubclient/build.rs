@@ -32,7 +32,7 @@ fn generate_bindings_rs() {
             arduino_include_root()
         ))
         .blocklist_file(format!("{}/cores/arduino/Client.h", arduino_include_root()))
-        .blocklist_file(format!("{}/cores/arduino/Client.h", arduino_include_root()))
+        .blocklist_file(format!("{}/cores/arduino/Stream.h", arduino_include_root()))
         .generate()
         .expect("Unable to generate bindings");
 

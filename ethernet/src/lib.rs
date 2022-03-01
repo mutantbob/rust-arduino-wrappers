@@ -6,9 +6,11 @@ use crate::EthernetInitializationMalfunction::{DhcpFailed, MissingHardware};
 use avr_hal_generic::port::mode::Output;
 use avr_hal_generic::port::Pin;
 use core::convert::TryInto;
-pub use raw::{Client, EthernetClient, EthernetServer, EthernetUDP, IPAddress};
+pub use raw::{EthernetClient, EthernetServer, EthernetUDP};
 use rust_arduino_helpers::NumberedPin;
-use ufmt::{uDisplay, uWrite, Formatter};
+pub use rust_arduino_runtime::client::Client;
+pub use rust_arduino_runtime::ip_address::IPAddress;
+use ufmt::{uWrite, Formatter};
 
 pub enum LinkStatus {
     Unknown,
@@ -48,10 +50,6 @@ impl From<u16> for HardwareStatus {
             _ => HardwareStatus::Madness(raw),
         }
     }
-}
-
-pub fn ip_address_4(a: u8, b: u8, c: u8, d: u8) -> IPAddress {
-    unsafe { IPAddress::new1(a, b, c, d) }
 }
 
 //
@@ -225,8 +223,8 @@ impl<P: NumberedPin> EthernetWrapper<P> {
         unsafe { raw::EthernetClass_localIP() }
     }
 
-    pub fn dns_server_ip(&self) -> IPAddress {
-        unsafe { raw::EthernetClass__dnsServerAddress } // stupid inline method
+    pub fn dns_server_ip(&self) -> &'static IPAddress {
+        unsafe { &raw::EthernetClass__dnsServerAddress } // stupid inline method
     }
 
     pub fn reclaim_pin(self) -> Pin<Output, P> {
@@ -256,23 +254,6 @@ impl<P: NumberedPin> EthernetWrapper<P> {
 
     pub fn make_client(&self) -> EthernetClient {
         EthernetClient::new()
-    }
-}
-
-impl uDisplay for IPAddress {
-    fn fmt<W>(&self, formatter: &mut Formatter<W>) -> Result<(), W::Error>
-    where
-        W: uWrite + ?Sized,
-    {
-        let x = unsafe { &self._address.bytes };
-        x[0].fmt(formatter)?;
-        '.'.fmt(formatter)?;
-        x[1].fmt(formatter)?;
-        '.'.fmt(formatter)?;
-        x[2].fmt(formatter)?;
-        '.'.fmt(formatter)?;
-        x[3].fmt(formatter)?;
-        Ok(())
     }
 }
 

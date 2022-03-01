@@ -2,6 +2,8 @@
 #![allow(dead_code)]
 #![allow(clippy::all)]
 
-use ethernet::raw::{Client, IPAddress};
+use rust_arduino_runtime::client::Client;
+use rust_arduino_runtime::ip_address::IPAddress;
+use rust_arduino_runtime::stream::Stream;
 
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
