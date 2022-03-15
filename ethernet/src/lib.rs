@@ -325,6 +325,18 @@ impl EthernetClient {
         unsafe { raw::virtual_EthernetClient_available(self as *mut EthernetClient) }
     }
 
+    pub fn write_byte(&mut self, val: u8) -> Result<(), SocketError> {
+        let n = unsafe {
+            raw::virtual_EthernetClient_write(self as *mut EthernetClient, &val as *const u8, 1)
+        };
+        if n == 0 {
+            // what is the error signaling method?  The base method returns a size_t which is unsigned
+            Err(SocketError::new("failed to write to socket"))
+        } else {
+            Ok(())
+        }
+    }
+
     pub fn write(&mut self, buffer: &[u8]) -> Result<(), SocketError> {
         let n = unsafe {
             raw::virtual_EthernetClient_write(

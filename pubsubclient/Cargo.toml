@@ -11,7 +11,7 @@ ethernet = { path = "../ethernet" }
 [dependencies.rust-arduino-runtime]
 #path="../../rust-arduino-helpers/rust-arduino-runtime"
 git="https://github.com/mutantbob/rust-arduino-helpers.git"
-branch="main"
+branch="2022-mar-kludge"
 
 [dependencies.cstr_core]
 #version="*"
@@ -27,4 +27,4 @@ cc="*"
 [build-dependencies.arduino-build-helpers]
 #path="../../rust-arduino-helpers/arduino-build-helpers"
 git="https://github.com/mutantbob/rust-arduino-helpers.git"
-branch="main"
+branch="2022-mar-kludge"

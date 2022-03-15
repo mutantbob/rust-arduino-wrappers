@@ -6,18 +6,31 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-avr-hal-generic = {git="https://github.com/rahix/avr-hal", rev="f84c0dff774c2292bc932b670955165161ecc7d1"}
-ufmt = "*"
+#avr-hal-generic = {git="https://github.com/rahix/avr-hal", rev="f84c0dff774c2292bc932b670955165161ecc7d1"}
+#ufmt = "*"
+
+[dependencies.avr-hal-generic]
+#git = "https://github.com/rahix/avr-hal"
+#rev = "f84c0dff774c2292bc932b670955165161ecc7d1"
+git = "https://github.com/mutantbob/avr-hal.git"
+branch="2022-mar-ufmt-fix"
+#path="../../../vendor/avr-hal/avr-hal-generic"
+
+[dependencies.ufmt]
+#version="*"
+#path="../../../vendor/ufmt"
+git="https://github.com/mrk-its/ufmt.git"
+branch="ptr_width_16_fix"
 
 [dependencies.rust-arduino-helpers]
 #path="../../rust-arduino-helpers"
 git="https://github.com/mutantbob/rust-arduino-helpers.git"
-branch="main"
+branch="2022-mar-kludge"
 
 [dependencies.rust-arduino-runtime]
 #path="../../rust-arduino-helpers/rust-arduino-runtime"
 git="https://github.com/mutantbob/rust-arduino-helpers.git"
-branch="main"
+branch="2022-mar-kludge"
 
 [dependencies.cty]
 git="https://github.com/mutantbob/cty.git"
@@ -36,7 +49,7 @@ cc="*"
 [build-dependencies.arduino-build-helpers]
 #path="../../rust-arduino-helpers/arduino-build-helpers"
 git="https://github.com/mutantbob/rust-arduino-helpers.git"
-branch="main"
+branch="2022-mar-kludge"
 
 [lib]
 #crate-type=["staticlib"]
