@@ -7,3 +7,6 @@
 [submodule "submodules/pubsubclient"]
 	path = submodules/pubsubclient
 	url = https://github.com/knolleary/pubsubclient.git
+[submodule "submodules/ArduCAM"]
+	path = submodules/ArduCAM
+	url = https://github.com/ArduCAM/Arduino.git

@@ -1,0 +1,41 @@
+[package]
+name = "arducam"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+#avr-hal-generic = {git="https://github.com/rahix/avr-hal", rev="f84c0dff774c2292bc932b670955165161ecc7d1"}
+[dependencies.avr-hal-generic]
+#git = "https://github.com/rahix/avr-hal"
+#rev = "f84c0dff774c2292bc932b670955165161ecc7d1"
+git = "https://github.com/mutantbob/avr-hal.git"
+branch="2022-mar-ufmt-fix"
+#path="../../../vendor/avr-hal/avr-hal-generic"
+
+[dependencies.rust-arduino-helpers]
+path="../../rust-arduino-helpers"
+#git="https://github.com/mutantbob/rust-arduino-helpers.git"
+#branch="main"
+
+[dependencies.arduino-hal]
+#git = "https://github.com/rahix/avr-hal"
+#rev = "f84c0dff774c2292bc932b670955165161ecc7d1"
+git = "https://github.com/mutantbob/avr-hal.git"
+branch="2022-mar-ufmt-fix"
+#path="../../../vendor/avr-hal/arduino-hal"
+features = ["arduino-uno"]
+
+[dependencies.cty]
+git="https://github.com/mutantbob/cty.git"
+branch="2022-Feb-avr"
+
+[build-dependencies]
+bindgen="*"
+cc="*"
+
+[build-dependencies.arduino-build-helpers]
+path="../../rust-arduino-helpers/arduino-build-helpers"
+#git="https://github.com/mutantbob/rust-arduino-helpers.git"
+#branch="main"
