@@ -410,6 +410,15 @@ impl EthernetClient {
     }
 }
 
+impl Drop for EthernetClient
+{
+
+    fn drop(&mut self)
+    {
+        self.stop();
+    }
+}
+
 pub struct SocketError {
     pub msg: &'static str,
 }
