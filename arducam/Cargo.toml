@@ -6,6 +6,12 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+nb = "0.1.2"
+
+[dependencies.arduino-spi]
+git="https://github.com/mutantbob/arduino-spi.git"
+#path="../../arduino-spi"
+
 #avr-hal-generic = {git="https://github.com/rahix/avr-hal", rev="f84c0dff774c2292bc932b670955165161ecc7d1"}
 [dependencies.avr-hal-generic]
 #git = "https://github.com/rahix/avr-hal"

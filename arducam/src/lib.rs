@@ -8,6 +8,7 @@
 /// https://cdn.sparkfun.com/datasheets/Sensors/LightImaging/OV5640_datasheet.pdf
 ///
 use arduino_hal::delay_ms;
+use arduino_spi::{Spi0, SpiTransaction0};
 use avr_hal_generic::port::mode::Output;
 use avr_hal_generic::port::{Pin, PinOps};
 use core::mem::MaybeUninit;
@@ -118,7 +119,7 @@ impl<P: NumberedPin + PinOps> ArduCamOV5642<P> {
         unsafe { self.inner.read_fifo() }
     }
 
-    pub fn burst_read<'a, SPI>(&'a mut self, spi: &'a mut SPI) -> BurstReader<'a, P, SPI> {
+    pub fn burst_read<'a>(&'a mut self, spi: &'a mut Spi0) -> BurstReader<'a, P> {
         BurstReader::new(self, spi)
     }
 
@@ -179,29 +180,18 @@ impl<P: NumberedPin + PinOps> ArduCamOV5642<P> {
 
 //
 
-pub struct BurstReader<'a, P: PinOps, SPI> {
-    cs_pin: &'a mut Pin<Output, P>,
-    spi: &'a mut SPI,
+pub struct BurstReader<'a, P: PinOps> {
+    spi: SpiTransaction0<'a, P>,
 }
 
-impl<'a, P: NumberedPin + PinOps, SPI> BurstReader<'a, P, SPI> {
-    pub fn new(cam: &'a mut ArduCamOV5642<P>, spi: &'a mut SPI) -> Self {
-        cam.cs_pin.set_low();
-        unsafe { cam.inner.set_fifo_burst() };
-
-        BurstReader {
-            cs_pin: &mut cam.cs_pin,
-            spi,
-        }
+impl<'a, P: NumberedPin + PinOps> BurstReader<'a, P> {
+    pub fn new(cam: &'a mut ArduCamOV5642<P>, spi: &'a mut Spi0) -> Self {
+        let mut spi = spi.begin_transaction(&mut cam.cs_pin);
+        spi.duplex_transfer(raw::BURST_FIFO_READ as u8); // tell the camera to start sending FIFO bytes as fast as we can read them
+        BurstReader { spi }
     }
     pub fn next(&mut self) -> u8 {
-        unsafe { raw::SPI_transfer() }
-    }
-}
-
-impl<'a, P: PinOps, SPI> Drop for BurstReader<'a, P, SPI> {
-    fn drop(&mut self) {
-        self.cs_pin.set_high();
+        self.spi.duplex_transfer(0)
     }
 }
 
