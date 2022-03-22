@@ -8,6 +8,10 @@ edition = "2018"
 [dependencies]
 #avr-hal-generic = {git="https://github.com/rahix/avr-hal", rev="f84c0dff774c2292bc932b670955165161ecc7d1"}
 #ufmt = "*"
+[dependencies.embedded-nal]
+#version="0.5.0"
+git = "https://github.com/mutantbob/embedded-nal.git"
+#path="../../embedded-nal"
 
 [dependencies.avr-hal-generic]
 #git = "https://github.com/rahix/avr-hal"

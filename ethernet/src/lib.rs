@@ -6,6 +6,7 @@ use crate::EthernetInitializationMalfunction::{DhcpFailed, MissingHardware};
 use avr_hal_generic::port::mode::Output;
 use avr_hal_generic::port::Pin;
 use core::convert::TryInto;
+use embedded_nal::{nb, IpAddr, SocketAddr};
 pub use raw::{Client, EthernetClient, EthernetServer, EthernetUDP, IPAddress};
 use rust_arduino_helpers::NumberedPin;
 use ufmt::{uDisplay, uWrite, Formatter};
@@ -49,6 +50,8 @@ impl From<u16> for HardwareStatus {
         }
     }
 }
+
+//
 
 pub fn ip_address_4(a: u8, b: u8, c: u8, d: u8) -> IPAddress {
     unsafe { IPAddress::new1(a, b, c, d) }
@@ -259,6 +262,63 @@ impl<P: NumberedPin> EthernetWrapper<P> {
     }
 }
 
+impl<P: NumberedPin> embedded_nal::TcpClientStack for EthernetWrapper<P> {
+    type TcpSocket = EthernetClient;
+    type Error = SocketError;
+
+    fn socket(&mut self) -> Result<Self::TcpSocket, Self::Error> {
+        Ok(self.make_client())
+    }
+
+    fn connect(
+        &mut self,
+        socket: &mut Self::TcpSocket,
+        remote: SocketAddr,
+    ) -> nb::Result<(), Self::Error> {
+        let ip = remote.ip();
+        let port = remote.port();
+        let ip = match ip {
+            IpAddr::V4(ipv4) => {
+                let octets = ipv4.octets();
+                unsafe { IPAddress::new1(octets[0], octets[1], octets[2], octets[3]) }
+            }
+            _ => {
+                return Err(nb::Error::Other(SocketError::new(
+                    "only IPv4 is supported by this module",
+                )))
+            }
+        };
+        socket.connect(ip, port).map_err(|e| nb::Error::Other(e))
+    }
+
+    fn is_connected(&mut self, socket: &Self::TcpSocket) -> Result<bool, Self::Error> {
+        Ok(socket.connected())
+    }
+
+    fn send(
+        &mut self,
+        socket: &mut Self::TcpSocket,
+        buffer: &[u8],
+    ) -> nb::Result<usize, Self::Error> {
+        socket.write(buffer).map_err(|e| nb::Error::Other(e))
+    }
+
+    fn receive(
+        &mut self,
+        socket: &mut Self::TcpSocket,
+        buffer: &mut [u8],
+    ) -> nb::Result<usize, Self::Error> {
+        socket
+            .read_multi(buffer)
+            .map(|slice| slice.len())
+            .map_err(|e| nb::Error::Other(e))
+    }
+
+    fn close(&mut self, mut socket: Self::TcpSocket) -> Result<(), Self::Error> {
+        Ok(socket.stop())
+    }
+}
+
 impl uDisplay for IPAddress {
     fn fmt<W>(&self, formatter: &mut Formatter<W>) -> Result<(), W::Error>
     where
@@ -285,7 +345,7 @@ impl EthernetUDP {
     ) -> raw::size_t {
         use cty::*;
         unsafe {
-            let this = self as *mut Self as *mut c_void;
+            let this = self as *mut Self as *mut cty::c_void;
             let n1 = raw::EthernetUDP_beginPacket(this, destination_ip, destination_port);
             let packet_len: u16 = payload.len().try_into().unwrap();
             let n2 = raw::EthernetUDP_write1(this, payload.as_mut_ptr(), packet_len);
@@ -313,12 +373,27 @@ impl EthernetClient {
         unsafe { raw::fabricate_EthernetClient() }
     }
 
+    pub fn connect(&mut self, ip: IPAddress, port: u16) -> Result<(), SocketError> {
+        let code = unsafe {
+            raw::EthernetClient_connect(self as *mut EthernetClient as *mut cty::c_void, ip, port)
+        };
+        if code != 0 {
+            Ok(())
+        } else {
+            Err(SocketError::new("failed to connect"))
+        }
+    }
+
     pub fn available_for_write(&mut self) -> i16 {
         unsafe { raw::virtual_EthernetClient_availableForWrite(self as *mut EthernetClient) }
     }
 
-    pub fn connected(&mut self) -> bool {
-        unsafe { raw::virtual_EthernetClient_connected(self as *mut EthernetClient) }
+    pub fn connected(&self) -> bool {
+        unsafe {
+            raw::virtual_EthernetClient_connected(
+                self as *const EthernetClient as *mut EthernetClient,
+            )
+        }
     }
 
     pub fn available(&mut self) -> i16 {
@@ -337,7 +412,7 @@ impl EthernetClient {
         }
     }
 
-    pub fn write(&mut self, buffer: &[u8]) -> Result<(), SocketError> {
+    pub fn write(&mut self, buffer: &[u8]) -> Result<cty::size_t, SocketError> {
         let n = unsafe {
             raw::virtual_EthernetClient_write(
                 self as *mut EthernetClient,
@@ -349,7 +424,7 @@ impl EthernetClient {
             // what is the error signaling method?  The base method returns a size_t which is unsigned
             Err(SocketError::new("failed to write to socket"))
         } else {
-            Ok(())
+            Ok(n.into())
         }
     }
 
@@ -410,18 +485,17 @@ impl EthernetClient {
     }
 }
 
-impl Drop for EthernetClient
-{
-
-    fn drop(&mut self)
-    {
+impl Drop for EthernetClient {
+    fn drop(&mut self) {
         self.stop();
     }
 }
 
+#[derive(Debug)]
 pub struct SocketError {
     pub msg: &'static str,
 }
+
 impl SocketError {
     pub fn new(msg: &'static str) -> SocketError {
         SocketError { msg }
@@ -433,6 +507,7 @@ impl uWrite for EthernetClient {
 
     fn write_str(&mut self, s: &str) -> Result<(), Self::Error> {
         let buffer = s.as_bytes();
-        self.write(buffer)
+        self.write(buffer)?;
+        Ok(())
     }
 }
