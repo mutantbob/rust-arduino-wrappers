@@ -3,7 +3,10 @@ name = "ethernet"
 version = "0.1.0"
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+board-selected=[]
+atmega328p = [ "board-selected", "rust-arduino-helpers/atmega328p" ]
+atmega2560 = [ "board-selected", "rust-arduino-helpers/atmega2560" ]
 
 [dependencies]
 #avr-hal-generic = {git="https://github.com/rahix/avr-hal", rev="f84c0dff774c2292bc932b670955165161ecc7d1"}

@@ -21,7 +21,7 @@ dependencies = [
 [[package]]
 name = "arduino-build-helpers"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#407fd1d37fe0d12a8424df985309f95bd0897aaf"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#d96158bdc72caec1d39d3d3d9871e44136f9b655"
 dependencies = [
  "bindgen",
  "cc",
@@ -300,11 +300,12 @@ dependencies = [
 [[package]]
 name = "embedded-nal"
 version = "0.6.0"
-source = "git+https://github.com/mutantbob/embedded-nal.git#d93ef4f4f8b5175602d2ff82f4a91035d80c9095"
+source = "git+https://github.com/mutantbob/embedded-nal.git#e4a65f48558c433f09ba0853a2d7a0f06a8be294"
 dependencies = [
  "heapless",
  "nb 1.0.0",
  "no-std-net",
+ "ufmt",
 ]
 
 [[package]]
@@ -354,7 +355,7 @@ dependencies = [
 [[package]]
 name = "heapless"
 version = "0.7.10"
-source = "git+https://github.com/mutantbob/heapless.git#d890acbef24fa096d90adda12be873ccb55e5d13"
+source = "git+https://github.com/mutantbob/heapless.git#75f330caa2b3c90099365ed1497c1a1e7c45e39e"
 dependencies = [
  "atomic-polyfill",
  "hash32",
@@ -554,9 +555,8 @@ dependencies = [
 [[package]]
 name = "rust-arduino-helpers"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#407fd1d37fe0d12a8424df985309f95bd0897aaf"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#d96158bdc72caec1d39d3d3d9871e44136f9b655"
 dependencies = [
- "arduino-hal",
  "atmega-hal",
  "embedded-hal",
  "nb 0.1.3",
@@ -566,7 +566,7 @@ dependencies = [
 [[package]]
 name = "rust-arduino-runtime"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#407fd1d37fe0d12a8424df985309f95bd0897aaf"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#d96158bdc72caec1d39d3d3d9871e44136f9b655"
 dependencies = [
  "arduino-build-helpers",
  "avr-progmem",

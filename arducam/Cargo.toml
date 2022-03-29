@@ -3,7 +3,10 @@ name = "arducam"
 version = "0.1.0"
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+board-selected=[]
+arduino-uno = [ "board-selected", "arduino-hal/arduino-uno", "arduino-spi/atmega328p" ]
+arduino-mega2560 = [ "board-selected", "arduino-hal/arduino-mega2560", "arduino-spi/atmega2560" ]
 
 [dependencies]
 nb = "0.1.2"
@@ -31,7 +34,6 @@ branch="2022-mar-kludge"
 git = "https://github.com/mutantbob/avr-hal.git"
 branch="2022-mar-ufmt-fix"
 #path="../../../vendor/avr-hal/arduino-hal"
-features = ["arduino-uno"]
 
 [dependencies.cty]
 git="https://github.com/mutantbob/cty.git"

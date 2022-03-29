@@ -11,6 +11,17 @@ pub use raw::{Client, EthernetClient, EthernetServer, EthernetUDP, IPAddress};
 use rust_arduino_helpers::NumberedPin;
 use ufmt::{uDisplay, uWrite, Formatter};
 
+#[cfg(not(feature = "board-selected"))]
+compile_error!(
+    "This crate requires you to specify your target Arduino board as a feature.
+
+    Please select one of the following
+
+    * atmega2560
+    * atmega328p
+    "
+);
+
 pub enum LinkStatus {
     Unknown,
     LinkOn,
@@ -499,6 +510,15 @@ pub struct SocketError {
 impl SocketError {
     pub fn new(msg: &'static str) -> SocketError {
         SocketError { msg }
+    }
+}
+
+impl ufmt::uDebug for SocketError {
+    fn fmt<W>(&self, msg: &mut Formatter<'_, W>) -> Result<(), W::Error>
+    where
+        W: uWrite + ?Sized,
+    {
+        msg.write_str(self.msg)
     }
 }
 

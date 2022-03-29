@@ -3,7 +3,12 @@ name = "neopixel"
 version = "0.1.0"
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+board-selected=[]
+atmega328p = [ "board-selected", "rust-arduino-helpers/atmega328p" ]
+atmega2560 = [ "board-selected", "rust-arduino-helpers/atmega2560" ]
+
 
 [dependencies]
 # cty="*"  # doesn't compile on AVR

@@ -8,7 +8,7 @@
 /// https://cdn.sparkfun.com/datasheets/Sensors/LightImaging/OV5640_datasheet.pdf
 ///
 use arduino_hal::delay_ms;
-use arduino_spi::{Spi0, SpiTransaction0};
+use arduino_spi::{Spi, SpiOps, SpiTransaction};
 use avr_hal_generic::port::mode::Output;
 use avr_hal_generic::port::{Pin, PinOps};
 use core::mem::MaybeUninit;
@@ -119,7 +119,16 @@ impl<P: NumberedPin + PinOps> ArduCamOV5642<P> {
         unsafe { self.inner.read_fifo() }
     }
 
-    pub fn burst_read<'a>(&'a mut self, spi: &'a mut Spi0) -> BurstReader<'a, P> {
+    pub fn burst_read<'a, H, SPI, SCLKPIN, MOSIPIN, MISOPIN>(
+        &'a mut self,
+        spi: &'a mut Spi<H, SPI, SCLKPIN, MOSIPIN, MISOPIN>,
+    ) -> BurstReader<'a, H, SPI, SCLKPIN, MOSIPIN, MISOPIN, P>
+    where
+        SPI: SpiOps<H, SCLKPIN, MOSIPIN, MISOPIN>,
+        SCLKPIN: PinOps,
+        MOSIPIN: PinOps,
+        MISOPIN: PinOps,
+    {
         BurstReader::new(self, spi)
     }
 
@@ -180,12 +189,22 @@ impl<P: NumberedPin + PinOps> ArduCamOV5642<P> {
 
 //
 
-pub struct BurstReader<'a, P: PinOps> {
-    spi: SpiTransaction0<'a, P>,
+pub struct BurstReader<'a, H, SPI, SCLKPIN, MOSIPIN, MISOPIN, CSPIN: PinOps> {
+    spi: SpiTransaction<'a, H, SPI, SCLKPIN, MOSIPIN, MISOPIN, CSPIN>,
 }
 
-impl<'a, P: NumberedPin + PinOps> BurstReader<'a, P> {
-    pub fn new(cam: &'a mut ArduCamOV5642<P>, spi: &'a mut Spi0) -> Self {
+impl<'a, H, SPI, SCLKPIN, MOSIPIN, MISOPIN, CSPIN: PinOps + NumberedPin>
+    BurstReader<'a, H, SPI, SCLKPIN, MOSIPIN, MISOPIN, CSPIN>
+where
+    SPI: SpiOps<H, SCLKPIN, MOSIPIN, MISOPIN>,
+    SCLKPIN: PinOps,
+    MOSIPIN: PinOps,
+    MISOPIN: PinOps,
+{
+    pub fn new(
+        cam: &'a mut ArduCamOV5642<CSPIN>,
+        spi: &'a mut Spi<H, SPI, SCLKPIN, MOSIPIN, MISOPIN>,
+    ) -> Self {
         let mut spi = spi.begin_transaction(&mut cam.cs_pin);
         spi.duplex_transfer(raw::BURST_FIFO_READ as u8); // tell the camera to start sending FIFO bytes as fast as we can read them
         BurstReader { spi }

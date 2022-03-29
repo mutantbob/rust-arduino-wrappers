@@ -3,3 +3,4 @@ neopixel/Cargo.lock
 pubsubclient/Cargo.lock
 target
 *.iml
+*~
