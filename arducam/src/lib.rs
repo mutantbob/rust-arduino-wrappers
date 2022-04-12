@@ -209,6 +209,8 @@ where
         spi.duplex_transfer(raw::BURST_FIFO_READ as u8); // tell the camera to start sending FIFO bytes as fast as we can read them
         BurstReader { spi }
     }
+
+    #[allow(clippy::should_implement_trait)]
     pub fn next(&mut self) -> u8 {
         self.spi.duplex_transfer(0)
     }

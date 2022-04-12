@@ -21,7 +21,7 @@ dependencies = [
 [[package]]
 name = "arduino-build-helpers"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#d96158bdc72caec1d39d3d3d9871e44136f9b655"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#8468bca4f361e4f57ed5d37d2c8cf814b164ffd1"
 dependencies = [
  "bindgen",
  "cc",
@@ -43,7 +43,7 @@ dependencies = [
 [[package]]
 name = "arduino-hal"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/avr-hal.git?branch=2022-mar-ufmt-fix#c95f4ae298b3dde79eb0e61b5f2b0b8c1c920378"
+source = "git+https://github.com/rahix/avr-hal?rev=f84c0dff774c2292bc932b670955165161ecc7d1#f84c0dff774c2292bc932b670955165161ecc7d1"
 dependencies = [
  "atmega-hal",
  "avr-device",
@@ -57,7 +57,7 @@ dependencies = [
 [[package]]
 name = "atmega-hal"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/avr-hal.git?branch=2022-mar-ufmt-fix#c95f4ae298b3dde79eb0e61b5f2b0b8c1c920378"
+source = "git+https://github.com/rahix/avr-hal?rev=f84c0dff774c2292bc932b670955165161ecc7d1#f84c0dff774c2292bc932b670955165161ecc7d1"
 dependencies = [
  "avr-device",
  "avr-hal-generic",
@@ -65,11 +65,11 @@ dependencies = [
 
 [[package]]
 name = "atomic-polyfill"
-version = "0.1.6"
-source = "git+https://github.com/mutantbob/atomic-polyfill.git?branch=main#98efdca991aa758426c77a68460e81ef1bab47f2"
+version = "0.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e14bf7b4f565e5e717d7a7a65b2a05c0b8c96e4db636d6f780f03b15108cdd1b"
 dependencies = [
  "critical-section",
- "riscv-target",
 ]
 
 [[package]]
@@ -82,6 +82,12 @@ dependencies = [
  "libc",
  "winapi",
 ]
+
+[[package]]
+name = "autocfg"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
 name = "avr-device"
@@ -109,7 +115,7 @@ dependencies = [
 [[package]]
 name = "avr-hal-generic"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/avr-hal.git?branch=2022-mar-ufmt-fix#c95f4ae298b3dde79eb0e61b5f2b0b8c1c920378"
+source = "git+https://github.com/rahix/avr-hal?rev=f84c0dff774c2292bc932b670955165161ecc7d1#f84c0dff774c2292bc932b670955165161ecc7d1"
 dependencies = [
  "avr-device",
  "cfg-if 0.1.10",
@@ -122,9 +128,9 @@ dependencies = [
 
 [[package]]
 name = "avr-progmem"
-version = "0.1.2"
+version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c132b5cb3bb60774763e02c965e7f8959a7f225e22291ada078968887fe8248c"
+checksum = "6fce6740a0ec004058607365f0fff070b51d1d9d41c171fe4c1111897f3cb7b1"
 dependencies = [
  "cfg-if 0.1.10",
 ]
@@ -258,8 +264,9 @@ dependencies = [
 
 [[package]]
 name = "critical-section"
-version = "0.2.5"
-source = "git+https://github.com/torrancew/critical-section.git?branch=support/avr-platform#928471f4594f2eeace551f699e28cd1acccd0f7e"
+version = "0.2.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "95da181745b56d4bd339530ec393508910c909c784e8962d15d722bacf0bcbcd"
 dependencies = [
  "bare-metal 1.0.0",
  "cfg-if 1.0.0",
@@ -300,7 +307,7 @@ dependencies = [
 [[package]]
 name = "embedded-nal"
 version = "0.6.0"
-source = "git+https://github.com/mutantbob/embedded-nal.git#e4a65f48558c433f09ba0853a2d7a0f06a8be294"
+source = "git+https://github.com/mutantbob/embedded-nal.git#94d84592ba2f4317523805ea01b6771279d6e106"
 dependencies = [
  "heapless",
  "nb 1.0.0",
@@ -355,7 +362,7 @@ dependencies = [
 [[package]]
 name = "heapless"
 version = "0.7.10"
-source = "git+https://github.com/mutantbob/heapless.git#75f330caa2b3c90099365ed1497c1a1e7c45e39e"
+source = "git+https://github.com/mutantbob/heapless.git#cde5da25e4da9edf38f5f6fabf43ef26aabeda9b"
 dependencies = [
  "atomic-polyfill",
  "hash32",
@@ -392,9 +399,9 @@ checksum = "830d08ce1d1d941e6b30645f1a0eb5643013d835ce3779a5fc208261dbe10f55"
 
 [[package]]
 name = "libc"
-version = "0.2.120"
+version = "0.2.123"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ad5c14e80759d0939d013e6ca49930e59fc53dd8e5009132f76240c179380c09"
+checksum = "cb691a747a7ab48abc15c5b42066eaafde10dc427e3b6ee2a1cf43db04c763bd"
 
 [[package]]
 name = "libloading"
@@ -408,18 +415,19 @@ dependencies = [
 
 [[package]]
 name = "lock_api"
-version = "0.4.6"
+version = "0.4.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "88943dd7ef4a2e5a4bfa2753aaab3013e34ce2533d1996fb18ef591e315e2b3b"
+checksum = "327fa5b6a6940e4699ec49a9beae1ea4845c6bab9314e4f84ac68742139d8c53"
 dependencies = [
+ "autocfg",
  "scopeguard",
 ]
 
 [[package]]
 name = "log"
-version = "0.4.14"
+version = "0.4.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "51b9bbe6c47d51fc3e1a9b945965946b4c44142ab8792c50835a980d362c2710"
+checksum = "6389c490849ff5bc16be905ae24bc913a9c8892e19b2341dbc175e14c341c2b8"
 dependencies = [
  "cfg-if 1.0.0",
 ]
@@ -480,9 +488,9 @@ checksum = "de96540e0ebde571dc55c73d60ef407c653844e6f9a1e2fdbd40c07b9252d812"
 
 [[package]]
 name = "paste"
-version = "1.0.6"
+version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0744126afe1a6dd7f394cb50a716dbe086cb06e255e53d8d0185d82828358fb5"
+checksum = "0c520e05135d6e763148b6426a837e239041653ba7becd2e538c076c738025fc"
 
 [[package]]
 name = "peeking_take_while"
@@ -498,18 +506,18 @@ checksum = "dbf0c48bc1d91375ae5c3cd81e3722dff1abcf81a30960240640d223f59fe0e5"
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.36"
+version = "1.0.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7342d5883fbccae1cc37a2353b09c87c9b0f3afd73f5fb9bba687a1f733b029"
+checksum = "ec757218438d5fda206afc041538b2f6d889286160d649a86a24d37e1235afd1"
 dependencies = [
  "unicode-xid",
 ]
 
 [[package]]
 name = "quote"
-version = "1.0.15"
+version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "864d3e96a899863136fc6e99f3d7cae289dafe43bf2c5ac19b70df7210c0a145"
+checksum = "a1feb54ed693b93a84e14094943b84b7c4eae204c512b7ccb95ab0c66d278ad1"
 dependencies = [
  "proc-macro2",
 ]
@@ -555,7 +563,7 @@ dependencies = [
 [[package]]
 name = "rust-arduino-helpers"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#d96158bdc72caec1d39d3d3d9871e44136f9b655"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#8468bca4f361e4f57ed5d37d2c8cf814b164ffd1"
 dependencies = [
  "atmega-hal",
  "embedded-hal",
@@ -566,7 +574,7 @@ dependencies = [
 [[package]]
 name = "rust-arduino-runtime"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#d96158bdc72caec1d39d3d3d9871e44136f9b655"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#8468bca4f361e4f57ed5d37d2c8cf814b164ffd1"
 dependencies = [
  "arduino-build-helpers",
  "avr-progmem",
@@ -640,9 +648,9 @@ checksum = "8ea5119cdb4c55b55d432abb513a0429384878c15dde60cc77b1c99de1a95a6a"
 
 [[package]]
 name = "syn"
-version = "1.0.88"
+version = "1.0.91"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ebd69e719f31e88618baa1eaa6ee2de5c9a1c004f1e9ecdb58e8352a13f20a01"
+checksum = "b683b2b825c8eef438b77c36a06dc262294da3d5a5813fac20da149241dcd44d"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -734,9 +742,9 @@ dependencies = [
 
 [[package]]
 name = "which"
-version = "4.2.4"
+version = "4.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2a5a7e487e921cf220206864a94a89b6c6905bfc19f1057fa26a4cb360e5c1d2"
+checksum = "5c4fb54e6113b6a8772ee41c3404fb0301ac79604489467e0a9ce1f3e97c24ae"
 dependencies = [
  "either",
  "lazy_static",
@@ -773,3 +781,8 @@ name = "winapi-x86_64-pc-windows-gnu"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
+
+[[patch.unused]]
+name = "atomic-polyfill"
+version = "0.1.7"
+source = "git+https://github.com/mutantbob/atomic-polyfill.git?branch=main#7609e5d60bc40b4a1aa16074893c79ab762ef65d"

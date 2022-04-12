@@ -299,7 +299,7 @@ impl<P: NumberedPin> embedded_nal::TcpClientStack for EthernetWrapper<P> {
                 )))
             }
         };
-        socket.connect(ip, port).map_err(|e| nb::Error::Other(e))
+        socket.connect(ip, port).map_err(nb::Error::Other)
     }
 
     fn is_connected(&mut self, socket: &Self::TcpSocket) -> Result<bool, Self::Error> {
@@ -311,7 +311,7 @@ impl<P: NumberedPin> embedded_nal::TcpClientStack for EthernetWrapper<P> {
         socket: &mut Self::TcpSocket,
         buffer: &[u8],
     ) -> nb::Result<usize, Self::Error> {
-        socket.write(buffer).map_err(|e| nb::Error::Other(e))
+        socket.write(buffer).map_err(nb::Error::Other)
     }
 
     fn receive(
@@ -322,11 +322,12 @@ impl<P: NumberedPin> embedded_nal::TcpClientStack for EthernetWrapper<P> {
         socket
             .read_multi(buffer)
             .map(|slice| slice.len())
-            .map_err(|e| nb::Error::Other(e))
+            .map_err(nb::Error::Other)
     }
 
     fn close(&mut self, mut socket: Self::TcpSocket) -> Result<(), Self::Error> {
-        Ok(socket.stop())
+        socket.stop();
+        Ok(())
     }
 }
 
