@@ -21,6 +21,7 @@ path = "src/web_client.rs"
 [dependencies]
 panic-halt = "0.2.0"
 nb = "0.1.2"
+ufmt = "*"
 ethernet={path="../ethernet"}
 
 [dependencies.cstr_core]
@@ -29,22 +30,16 @@ git="https://github.com/mutantbob/cstr_core.git"
 #path="../../../vendor/cstr_core"
 default-features=false
 
-[dependencies.ufmt]
-#version="*"
-#path="../../../vendor/ufmt"
-git="https://github.com/mrk-its/ufmt.git"
-branch="ptr_width_16_fix"
-
 [dependencies.rust-arduino-runtime]
 #path="../../rust-arduino-helpers/rust-arduino-runtime"
 git="https://github.com/mutantbob/rust-arduino-helpers.git"
 branch="2022-mar-kludge"
 
 [dependencies.arduino-hal]
-#git = "https://github.com/rahix/avr-hal"
-#rev = "f84c0dff774c2292bc932b670955165161ecc7d1"
-git = "https://github.com/mutantbob/avr-hal.git"
-branch="2022-mar-ufmt-fix"
+git = "https://github.com/rahix/avr-hal"
+rev = "f84c0dff774c2292bc932b670955165161ecc7d1"
+#git = "https://github.com/mutantbob/avr-hal.git"
+#branch="2022-mar-ufmt-fix"
 
 # Configure the build for minimal size - AVRs have very little program memory
 [profile.dev]
@@ -58,3 +53,10 @@ codegen-units = 1
 debug = true
 lto = true
 opt-level = "s"
+
+
+[patch.crates-io]
+ufmt = { git = "https://github.com/mrk-its/ufmt.git", branch="ptr_width_16_fix" }
+cty = { git="https://github.com/mutantbob/cty.git", branch="2022-Feb-avr" , default-features=false }
+atomic-polyfill = { git="https://github.com/mutantbob/atomic-polyfill.git", branch="main" }
+heapless = { git = "https://github.com/mutantbob/heapless.git" }
