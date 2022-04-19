@@ -6,7 +6,7 @@ version = "0.7.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1e37cfd5e7657ada45f742d6e99ca5788580b5c529dc78faf11ece6dc702656f"
 dependencies = [
- "memchr 2.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "memchr",
 ]
 
 [[package]]
@@ -277,10 +277,11 @@ dependencies = [
 [[package]]
 name = "cstr_core"
 version = "0.2.5"
-source = "git+https://github.com/mutantbob/cstr_core.git#a9f3f80e37551d241692a59a85909e9c997fecdd"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "644828c273c063ab0d39486ba42a5d1f3a499d35529c759e763a9c6cb8a0fb08"
 dependencies = [
  "cty",
- "memchr 2.4.1 (git+https://github.com/BurntSushi/memchr.git?tag=2.4.1)",
+ "memchr",
 ]
 
 [[package]]
@@ -439,11 +440,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "308cc39be01b73d0d18f82a0e7b2a3df85245f84af96fdddc5d202d27e47b86a"
 
 [[package]]
-name = "memchr"
-version = "2.4.1"
-source = "git+https://github.com/BurntSushi/memchr.git?tag=2.4.1#8e1da98fee06d66c13e66c330e3a3dd6ccf0e3a0"
-
-[[package]]
 name = "minimal-lexical"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -476,7 +472,7 @@ version = "7.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8903e5a29a317527874d0402f867152a3d21c908bb0b933e416c65e301d4c36"
 dependencies = [
- "memchr 2.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "memchr",
  "minimal-lexical",
 ]
 
@@ -529,7 +525,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1a11647b6b25ff05a515cb92c365cec08801e83423a235b51e231e1808747286"
 dependencies = [
  "aho-corasick",
- "memchr 2.4.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "memchr",
  "regex-syntax",
 ]
 
