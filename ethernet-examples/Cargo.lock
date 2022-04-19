@@ -21,7 +21,7 @@ dependencies = [
 [[package]]
 name = "arduino-build-helpers"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#8468bca4f361e4f57ed5d37d2c8cf814b164ffd1"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#70f878f8df208ac48dc2f49f65f30adaea0ff33c"
 dependencies = [
  "bindgen",
  "cc",
@@ -128,11 +128,11 @@ dependencies = [
 
 [[package]]
 name = "avr-progmem"
-version = "0.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6fce6740a0ec004058607365f0fff070b51d1d9d41c171fe4c1111897f3cb7b1"
+version = "0.2.0"
+source = "git+https://github.com/Cryptjar/avr-progmem-rs.git?branch=v0.2#2cead2b538ce5cf40caac6c0977bc3cd1f866fce"
 dependencies = [
- "cfg-if 0.1.10",
+ "cfg-if 1.0.0",
+ "ufmt",
 ]
 
 [[package]]
@@ -363,7 +363,7 @@ dependencies = [
 [[package]]
 name = "heapless"
 version = "0.7.10"
-source = "git+https://github.com/mutantbob/heapless.git#cde5da25e4da9edf38f5f6fabf43ef26aabeda9b"
+source = "git+https://github.com/mutantbob/heapless.git#84600244d9c5505f65a315667dcf86a6f08445b4"
 dependencies = [
  "atomic-polyfill",
  "hash32",
@@ -400,9 +400,9 @@ checksum = "830d08ce1d1d941e6b30645f1a0eb5643013d835ce3779a5fc208261dbe10f55"
 
 [[package]]
 name = "libc"
-version = "0.2.123"
+version = "0.2.124"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cb691a747a7ab48abc15c5b42066eaafde10dc427e3b6ee2a1cf43db04c763bd"
+checksum = "21a41fed9d98f27ab1c6d161da622a4fa35e8a54a8adc24bbf3ddd0ef70b0e50"
 
 [[package]]
 name = "libloading"
@@ -559,7 +559,7 @@ dependencies = [
 [[package]]
 name = "rust-arduino-helpers"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#8468bca4f361e4f57ed5d37d2c8cf814b164ffd1"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#70f878f8df208ac48dc2f49f65f30adaea0ff33c"
 dependencies = [
  "atmega-hal",
  "embedded-hal",
@@ -570,7 +570,7 @@ dependencies = [
 [[package]]
 name = "rust-arduino-runtime"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#8468bca4f361e4f57ed5d37d2c8cf814b164ffd1"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#70f878f8df208ac48dc2f49f65f30adaea0ff33c"
 dependencies = [
  "arduino-build-helpers",
  "avr-progmem",
@@ -623,9 +623,9 @@ checksum = "43b2853a4d09f215c24cc5489c992ce46052d359b5109343cbafbf26bc62f8a3"
 
 [[package]]
 name = "spin"
-version = "0.9.2"
+version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "511254be0c5bcf062b019a6c89c01a664aa359ded62f78aa72c6fc137c0590e5"
+checksum = "c530c2b0d0bf8b69304b39fe2001993e267461948b890cd037d8ad4293fa1a0d"
 dependencies = [
  "lock_api",
 ]
