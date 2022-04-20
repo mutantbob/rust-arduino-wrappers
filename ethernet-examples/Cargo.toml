@@ -55,5 +55,4 @@ opt-level = "s"
 [patch.crates-io]
 ufmt = { git = "https://github.com/mrk-its/ufmt.git", branch="ptr_width_16_fix" }
 cty = { git="https://github.com/mutantbob/cty.git", branch="2022-Feb-avr" , default-features=false }
-atomic-polyfill = { git="https://github.com/mutantbob/atomic-polyfill.git", branch="main" }
 heapless = { git = "https://github.com/mutantbob/heapless.git" }

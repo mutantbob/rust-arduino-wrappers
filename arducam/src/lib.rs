@@ -78,6 +78,8 @@ impl<P: NumberedPin + PinOps> ArduCamOV5642<P> {
         }
     }
 
+    /// # Safety
+    /// the rdSensorReg16_8() emitted by bindgen is "unsafe"
     pub unsafe fn rd_sensor_reg16_8(&mut self, register: u16) -> u8 {
         let mut val = MaybeUninit::uninit();
         self.inner.rdSensorReg16_8(register, val.as_mut_ptr());
@@ -140,6 +142,8 @@ impl<P: NumberedPin + PinOps> ArduCamOV5642<P> {
 
     // register 3
 
+    /// # Safety
+    /// the write_reg() emitted by bindgen is "unsafe"
     pub unsafe fn timing_register_set_mask(&mut self, mask: TimingMask) {
         self.inner.write_reg(raw::ARDUCHIP_TIM as u8, mask as u8);
     }
@@ -160,10 +164,14 @@ impl<P: NumberedPin + PinOps> ArduCamOV5642<P> {
 
     // register 6
 
+    /// # Safety
+    /// the set_bit() emitted by bindgen is "unsafe"
     pub unsafe fn gpio6_set_mask(&mut self, mask: GPIOMask) {
         self.inner.set_bit(ARDUCHIP_GPIO, mask as u8);
     }
 
+    /// # Safety
+    /// the clear_bit() emitted by bindgen is "unsafe"
     pub unsafe fn gpio6_clear_mask(&mut self, mask: GPIOMask) {
         self.inner.clear_bit(ARDUCHIP_GPIO, mask as u8);
     }
@@ -178,6 +186,8 @@ impl<P: NumberedPin + PinOps> ArduCamOV5642<P> {
 
     // register 65
 
+    /// # Safety
+    /// the get_bit() emitted by bindgen is "unsafe"
     pub unsafe fn trig_get_mask(&mut self, mask: TriggerCmd) -> bool {
         0 != self.inner.get_bit(raw::ARDUCHIP_TRIG as u8, mask as u8)
     }

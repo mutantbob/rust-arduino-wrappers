@@ -13,11 +13,7 @@ atmega2560 = [ "board-selected", "rust-arduino-helpers/atmega2560" ]
 ufmt = "*"
 cty = "*"
 cstr_core = { version="*", default-features=false }
-
-[dependencies.embedded-nal]
-#version="0.5.0"
-git = "https://github.com/mutantbob/embedded-nal.git"
-#path="../../embedded-nal"
+embedded-nal = "*"
 
 [dependencies.avr-hal-generic]
 git = "https://github.com/rahix/avr-hal"

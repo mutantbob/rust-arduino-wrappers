@@ -21,7 +21,7 @@ dependencies = [
 [[package]]
 name = "arduino-build-helpers"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#70f878f8df208ac48dc2f49f65f30adaea0ff33c"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#0451271307155d638e72f6e0845473d0374cc8da"
 dependencies = [
  "bindgen",
  "cc",
@@ -129,7 +129,8 @@ dependencies = [
 [[package]]
 name = "avr-progmem"
 version = "0.2.0"
-source = "git+https://github.com/Cryptjar/avr-progmem-rs.git?branch=v0.2#2cead2b538ce5cf40caac6c0977bc3cd1f866fce"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "907db155f66acd1875cf3c867024cb890eefe7fae86773981953c5970ebf9d46"
 dependencies = [
  "cfg-if 1.0.0",
  "ufmt",
@@ -308,12 +309,12 @@ dependencies = [
 [[package]]
 name = "embedded-nal"
 version = "0.6.0"
-source = "git+https://github.com/mutantbob/embedded-nal.git#94d84592ba2f4317523805ea01b6771279d6e106"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "db9efecb57ab54fa918730f2874d7d37647169c50fa1357fecb81abee840b113"
 dependencies = [
  "heapless",
  "nb 1.0.0",
  "no-std-net",
- "ufmt",
 ]
 
 [[package]]
@@ -559,7 +560,7 @@ dependencies = [
 [[package]]
 name = "rust-arduino-helpers"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#70f878f8df208ac48dc2f49f65f30adaea0ff33c"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#0451271307155d638e72f6e0845473d0374cc8da"
 dependencies = [
  "atmega-hal",
  "embedded-hal",
@@ -570,7 +571,7 @@ dependencies = [
 [[package]]
 name = "rust-arduino-runtime"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#70f878f8df208ac48dc2f49f65f30adaea0ff33c"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#0451271307155d638e72f6e0845473d0374cc8da"
 dependencies = [
  "arduino-build-helpers",
  "avr-progmem",
@@ -777,8 +778,3 @@ name = "winapi-x86_64-pc-windows-gnu"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
-
-[[patch.unused]]
-name = "atomic-polyfill"
-version = "0.1.7"
-source = "git+https://github.com/mutantbob/atomic-polyfill.git?branch=main#7609e5d60bc40b4a1aa16074893c79ab762ef65d"
