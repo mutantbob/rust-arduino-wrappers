@@ -84,7 +84,24 @@ IPAddress virtual_EthernetClient_remoteIP(const EthernetClient *that)
     return ((EthernetClient*)that)->remoteIP();
 }
 
+//
+
 EthernetUDP fabricate_EthernetUDP()
 {
     return EthernetUDP();
+}
+
+IPAddress virtual_EthernetUDP_remoteIP(const EthernetUDP *that)
+{
+    return that->remoteIP();
+}
+
+uint16_t virtual_EthernetUDP_remotePort(const EthernetUDP *that)
+{
+    return that->remoteIP();
+}
+
+uint16_t virtual_EthernetUDP_localPort(const EthernetUDP *that)
+{
+    return that->localPort();
 }

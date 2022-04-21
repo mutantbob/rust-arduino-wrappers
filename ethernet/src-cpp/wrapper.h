@@ -25,3 +25,7 @@ IPAddress virtual_EthernetClient_remoteIP(const EthernetClient *that);
 //
 
 EthernetUDP fabricate_EthernetUDP();
+
+IPAddress virtual_EthernetUDP_remoteIP(const EthernetUDP *that);
+uint16_t virtual_EthernetUDP_remotePort(const EthernetUDP *that);
+uint16_t virtual_EthernetUDP_localPort(const EthernetUDP *that);

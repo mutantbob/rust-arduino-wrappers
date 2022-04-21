@@ -235,6 +235,19 @@ impl<P: NumberedPin> EthernetWrapper<P> {
         }
     }
 
+    pub fn new_udp_multicast(
+        &self,
+        multicast_address: IPAddress,
+        port: u16,
+    ) -> Option<EthernetUDP> {
+        let mut rval = unsafe { raw::fabricate_EthernetUDP() };
+        if rval.begin_multicast(multicast_address, port) != 0 {
+            Some(rval)
+        } else {
+            None
+        }
+    }
+
     pub fn local_ip(&self) -> IPAddress {
         unsafe { raw::EthernetClass_localIP() }
     }
@@ -349,9 +362,14 @@ impl uDisplay for IPAddress {
 }
 
 impl EthernetUDP {
-    pub fn begin(&mut self, port: u16) -> u8 {
+    fn begin(&mut self, port: u16) -> u8 {
         let this = self as *mut Self as *mut cty::c_void;
         unsafe { raw::EthernetUDP_begin(this, port) }
+    }
+
+    fn begin_multicast(&mut self, multicast_address: IPAddress, port: u16) -> u8 {
+        let this = self as *mut Self as *mut cty::c_void;
+        unsafe { raw::EthernetUDP_beginMulticast(this, multicast_address, port) }
     }
 
     pub fn send_to(
@@ -379,6 +397,7 @@ impl EthernetUDP {
         }
     }
 
+    /// maybe receive a UDP packet
     pub fn parse_packet(&mut self) -> Option<UdpPacketTransaction> {
         let this = self as *mut Self as *mut cty::c_void;
         let packet_size = unsafe { raw::EthernetUDP_parsePacket(this) };
@@ -404,15 +423,19 @@ impl EthernetUDP {
         0 != unsafe { raw::EthernetUDP_beginPacket(this, addr, port) }
     }
 
-    fn stop(&mut self) {
+    fn inner_stop(&mut self) {
         let this = self as *mut Self as *mut cty::c_void;
         unsafe { raw::EthernetUDP_stop(this) }
+    }
+
+    pub fn stop(mut self) {
+        self.inner_stop()
     }
 }
 
 impl Drop for EthernetUDP {
     fn drop(&mut self) {
-        self.stop()
+        self.inner_stop()
     }
 }
 
@@ -427,6 +450,21 @@ impl<'a> UdpPacketTransaction<'a> {
         UdpPacketTransaction { socket }
     }
 
+    pub fn available(&mut self) -> i16 {
+        let this = self.socket as *mut EthernetUDP as *mut cty::c_void;
+        unsafe { raw::EthernetUDP_available(this) }
+    }
+
+    pub fn read_byte(&mut self) -> Option<u8> {
+        let this = self.socket as *mut EthernetUDP as *mut cty::c_void;
+        let val = unsafe { raw::EthernetUDP_read(this) };
+        if val < 0 {
+            None
+        } else {
+            Some(val as u8)
+        }
+    }
+
     pub fn read<'b>(&mut self, buffer: &'b mut [u8]) -> Option<&'b [u8]> {
         let this = self.socket as *mut EthernetUDP as *mut cty::c_void;
         let buffer_ptr = buffer.as_mut_ptr();
@@ -437,6 +475,28 @@ impl<'a> UdpPacketTransaction<'a> {
         } else {
             None
         }
+    }
+
+    pub fn peek(&mut self) -> Option<u8> {
+        let this = self.socket as *mut EthernetUDP as *mut cty::c_void;
+        let val = unsafe { raw::EthernetUDP_peek(this) };
+        if val < 0 {
+            None
+        } else {
+            Some(val as u8)
+        }
+    }
+
+    pub fn remote_ip(&self) -> IPAddress {
+        unsafe { raw::virtual_EthernetUDP_remoteIP(self.socket) }
+    }
+
+    pub fn remote_port(&self) -> u16 {
+        unsafe { raw::virtual_EthernetUDP_remotePort(self.socket) }
+    }
+
+    pub fn local_port(&self) -> u16 {
+        unsafe { raw::virtual_EthernetUDP_localPort(self.socket) }
     }
 }
 
