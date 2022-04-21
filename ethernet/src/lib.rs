@@ -227,12 +227,7 @@ impl<P: NumberedPin> EthernetWrapper<P> {
     }
 
     pub fn new_udp(&self, port: u16) -> EthernetUDP {
-        let mut rval = ::core::mem::MaybeUninit::uninit();
-        unsafe {
-            raw::EthernetUDP_begin(rval.as_mut_ptr() as *mut cty::c_void, port);
-
-            rval.assume_init()
-        }
+        unsafe { raw::fabricate_EthernetUDP(port) }
     }
 
     pub fn local_ip(&self) -> IPAddress {
@@ -366,7 +361,67 @@ impl EthernetUDP {
             n1 as c_uint + n2 + n3 as c_uint
         }
     }
+
+    pub fn parse_packet(&mut self) -> Option<UdpPacketTransaction> {
+        let this = self as *mut Self as *mut cty::c_void;
+        let packet_size = unsafe { raw::EthernetUDP_parsePacket(this) };
+        if packet_size > 0 {
+            Some(UdpPacketTransaction::new(self))
+        } else {
+            None
+        }
+    }
+
+    pub fn remote_ip(&mut self) -> IPAddress {
+        let this = self as *mut Self as *mut cty::c_void;
+        unsafe { raw::EthernetClient_remoteIP(this) }
+    }
+
+    pub fn remote_port(&mut self) -> u16 {
+        let this = self as *mut Self as *mut cty::c_void;
+        unsafe { raw::EthernetClient_remotePort(this) }
+    }
+
+    /* fn begin_packet(&mut self, addr: IPAddress, port: u16) {
+        let this = self as *mut Self as *mut cty::c_void;
+        raw::EthernetUDP_beginPacket(this, addr, port)
+    }*/
 }
+
+//
+
+pub struct UdpPacketTransaction<'a> {
+    socket: &'a mut EthernetUDP,
+}
+
+impl<'a> UdpPacketTransaction<'a> {
+    pub fn new(socket: &'a mut EthernetUDP) -> Self {
+        UdpPacketTransaction { socket }
+    }
+
+    pub fn read<'b>(&mut self, buffer: &'b mut [u8]) -> Option<&'b [u8]> {
+        let this = self.socket as *mut EthernetUDP as *mut cty::c_void;
+        let buffer_ptr = buffer.as_mut_ptr();
+        let len = buffer.len().min(u16::MAX as usize) as u16;
+        let n = unsafe { raw::EthernetUDP_read1(this, buffer_ptr, len) };
+        if n > 0 {
+            Some(&buffer[0..n as usize])
+        } else {
+            None
+        }
+    }
+}
+
+impl<'a> Drop for UdpPacketTransaction<'a> {
+    fn drop(&mut self) {
+        let this = self as *mut Self as *mut cty::c_void;
+        unsafe {
+            raw::EthernetUDP_flush(this);
+        }
+    }
+}
+
+//
 
 /// To create one of these, use [`EthernetWrapper::tcp_listen`]
 impl EthernetServer {

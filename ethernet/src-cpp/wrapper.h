@@ -21,3 +21,7 @@ int virtual_EthernetClient_availableForWrite(EthernetClient* that);
 Client* cast_to_Client(EthernetClient *that);
 
 IPAddress virtual_EthernetClient_remoteIP(const EthernetClient *that);
+
+//
+
+EthernetUDP fabricate_EthernetUDP(unsigned int port);
