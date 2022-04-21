@@ -84,9 +84,7 @@ IPAddress virtual_EthernetClient_remoteIP(const EthernetClient *that)
     return ((EthernetClient*)that)->remoteIP();
 }
 
-EthernetUDP fabricate_EthernetUDP(unsigned int port)
+EthernetUDP fabricate_EthernetUDP()
 {
-    EthernetUDP rval;
-    rval.begin(port);
-    return rval;
+    return EthernetUDP();
 }

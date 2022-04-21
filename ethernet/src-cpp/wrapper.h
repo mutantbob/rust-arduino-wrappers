@@ -24,4 +24,4 @@ IPAddress virtual_EthernetClient_remoteIP(const EthernetClient *that);
 
 //
 
-EthernetUDP fabricate_EthernetUDP(unsigned int port);
+EthernetUDP fabricate_EthernetUDP();

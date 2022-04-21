@@ -226,8 +226,13 @@ impl<P: NumberedPin> EthernetWrapper<P> {
         unsafe { raw::EthernetClass::linkStatus().into() }
     }
 
-    pub fn new_udp(&self, port: u16) -> EthernetUDP {
-        unsafe { raw::fabricate_EthernetUDP(port) }
+    pub fn new_udp(&self, port: u16) -> Option<EthernetUDP> {
+        let mut rval = unsafe { raw::fabricate_EthernetUDP() };
+        if rval.begin(port) != 0 {
+            Some(rval)
+        } else {
+            None
+        }
     }
 
     pub fn local_ip(&self) -> IPAddress {
@@ -344,21 +349,33 @@ impl uDisplay for IPAddress {
 }
 
 impl EthernetUDP {
+    pub fn begin(&mut self, port: u16) -> u8 {
+        let this = self as *mut Self as *mut cty::c_void;
+        unsafe { raw::EthernetUDP_begin(this, port) }
+    }
+
     pub fn send_to(
         &mut self,
         destination_ip: IPAddress,
         destination_port: u16,
-        payload: &mut [u8],
+        payload: &[u8],
     ) -> raw::size_t {
-        use cty::*;
-        unsafe {
-            let this = self as *mut Self as *mut cty::c_void;
-            let n1 = raw::EthernetUDP_beginPacket(this, destination_ip, destination_port);
-            let packet_len: u16 = payload.len().try_into().unwrap();
-            let n2 = raw::EthernetUDP_write1(this, payload.as_mut_ptr(), packet_len);
-            let n3 = raw::EthernetUDP_endPacket(this);
-
-            n1 as c_uint + n2 + n3 as c_uint
+        // use cty::*;
+        if self.begin_packet(destination_ip, destination_port) {
+            unsafe {
+                let this = self as *mut Self as *mut cty::c_void;
+                let packet_len: u16 = payload.len().try_into().unwrap();
+                let n2 = raw::EthernetUDP_write1(this, payload.as_ptr(), packet_len);
+                if 0 != raw::EthernetUDP_endPacket(this) {
+                    n2
+                } else {
+                    // XXX some kind of error
+                    0
+                }
+            }
+        } else {
+            // XXX some kind of error
+            0
         }
     }
 
@@ -382,10 +399,21 @@ impl EthernetUDP {
         unsafe { raw::EthernetClient_remotePort(this) }
     }
 
-    /* fn begin_packet(&mut self, addr: IPAddress, port: u16) {
+    fn begin_packet(&mut self, addr: IPAddress, port: u16) -> bool {
         let this = self as *mut Self as *mut cty::c_void;
-        raw::EthernetUDP_beginPacket(this, addr, port)
-    }*/
+        0 != unsafe { raw::EthernetUDP_beginPacket(this, addr, port) }
+    }
+
+    fn stop(&mut self) {
+        let this = self as *mut Self as *mut cty::c_void;
+        unsafe { raw::EthernetUDP_stop(this) }
+    }
+}
+
+impl Drop for EthernetUDP {
+    fn drop(&mut self) {
+        self.stop()
+    }
 }
 
 //

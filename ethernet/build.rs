@@ -25,6 +25,7 @@ fn generate_bindings_rs() {
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
         .ctypes_prefix("rust_arduino_runtime::workaround_cty")
         // .ctypes_prefix("cty") // using this causes `undefined reference` link errors
+        .no_copy("EthernetUDP")
         .generate()
         .expect("Unable to generate bindings");
 
