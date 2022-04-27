@@ -12,14 +12,7 @@ atmega2560 = [ "board-selected", "rust-arduino-helpers/atmega2560" ]
 
 [dependencies]
  cty="*"
-#avr-hal-generic = {git="https://github.com/rahix/avr-hal", rev="f84c0dff774c2292bc932b670955165161ecc7d1"}
-
-[dependencies.avr-hal-generic]
-git = "https://github.com/rahix/avr-hal"
-rev = "f84c0dff774c2292bc932b670955165161ecc7d1"
-#git = "https://github.com/mutantbob/avr-hal.git"
-#branch="2022-mar-ufmt-fix"
-#path="../../../vendor/avr-hal/avr-hal-generic"
+avr-hal-generic = {git="https://github.com/rahix/avr-hal", rev="f84c0dff774c2292bc932b670955165161ecc7d1"}
 
 [dependencies.rust-arduino-helpers]
 #path="../../rust-arduino-helpers"

@@ -21,7 +21,7 @@ dependencies = [
 [[package]]
 name = "arduino-build-helpers"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#0451271307155d638e72f6e0845473d0374cc8da"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#211d2a6c5625430ab4610bfb2ae50a8e3379bcb6"
 dependencies = [
  "bindgen",
  "cc",
@@ -560,7 +560,7 @@ dependencies = [
 [[package]]
 name = "rust-arduino-helpers"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#0451271307155d638e72f6e0845473d0374cc8da"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#211d2a6c5625430ab4610bfb2ae50a8e3379bcb6"
 dependencies = [
  "atmega-hal",
  "embedded-hal",
@@ -571,7 +571,7 @@ dependencies = [
 [[package]]
 name = "rust-arduino-runtime"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#0451271307155d638e72f6e0845473d0374cc8da"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#211d2a6c5625430ab4610bfb2ae50a8e3379bcb6"
 dependencies = [
  "arduino-build-helpers",
  "avr-progmem",
