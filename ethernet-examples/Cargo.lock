@@ -21,7 +21,7 @@ dependencies = [
 [[package]]
 name = "arduino-build-helpers"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#211d2a6c5625430ab4610bfb2ae50a8e3379bcb6"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#ba4998977b71d49f3bb4c8165a5260d1ff495af7"
 dependencies = [
  "bindgen",
  "cc",
@@ -43,7 +43,7 @@ dependencies = [
 [[package]]
 name = "arduino-hal"
 version = "0.1.0"
-source = "git+https://github.com/rahix/avr-hal?rev=f84c0dff774c2292bc932b670955165161ecc7d1#f84c0dff774c2292bc932b670955165161ecc7d1"
+source = "git+https://github.com/rahix/avr-hal?rev=d0d2f243bd3e10b49f6a78d44839a6caa8be7d43#d0d2f243bd3e10b49f6a78d44839a6caa8be7d43"
 dependencies = [
  "atmega-hal",
  "avr-device",
@@ -57,7 +57,7 @@ dependencies = [
 [[package]]
 name = "atmega-hal"
 version = "0.1.0"
-source = "git+https://github.com/rahix/avr-hal?rev=f84c0dff774c2292bc932b670955165161ecc7d1#f84c0dff774c2292bc932b670955165161ecc7d1"
+source = "git+https://github.com/rahix/avr-hal?rev=d0d2f243bd3e10b49f6a78d44839a6caa8be7d43#d0d2f243bd3e10b49f6a78d44839a6caa8be7d43"
 dependencies = [
  "avr-device",
  "avr-hal-generic",
@@ -91,21 +91,22 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
 name = "avr-device"
-version = "0.3.2"
+version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4eb440a38bef22cef233b3eb46ef13e588eb8dcc70a1bdce3f00ebc6bf6b48dd"
+checksum = "4e7c1cef04ede70192080e05c3e1b5d97a2ab97ebde41145f7444600fc29dd5b"
 dependencies = [
  "avr-device-macros",
  "bare-metal 0.2.5",
  "cfg-if 0.1.10",
+ "rustversion",
  "vcell",
 ]
 
 [[package]]
 name = "avr-device-macros"
-version = "0.3.2"
+version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2c62997db86a92e73b68ab491d4379e1ddb12e94a9eb542180bc6b60f0e09f8b"
+checksum = "ab3dba70559ee3562230a75ce7839c30bfb257052930458cc920577c89b95eda"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -115,22 +116,22 @@ dependencies = [
 [[package]]
 name = "avr-hal-generic"
 version = "0.1.0"
-source = "git+https://github.com/rahix/avr-hal?rev=f84c0dff774c2292bc932b670955165161ecc7d1#f84c0dff774c2292bc932b670955165161ecc7d1"
+source = "git+https://github.com/rahix/avr-hal?rev=d0d2f243bd3e10b49f6a78d44839a6caa8be7d43#d0d2f243bd3e10b49f6a78d44839a6caa8be7d43"
 dependencies = [
  "avr-device",
  "cfg-if 0.1.10",
  "embedded-hal",
  "nb 0.1.3",
  "paste",
+ "rustversion",
  "ufmt",
  "void",
 ]
 
 [[package]]
 name = "avr-progmem"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "907db155f66acd1875cf3c867024cb890eefe7fae86773981953c5970ebf9d46"
+version = "0.3.0-alpha"
+source = "git+https://github.com/Cryptjar/avr-progmem-rs.git?branch=v0.3#b89f0c4686f19c5e485d18314f2bd0539078db4a"
 dependencies = [
  "cfg-if 1.0.0",
  "ufmt",
@@ -142,7 +143,7 @@ version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5deb64efa5bd81e31fcd1938615a6d98c82eafcbcd787162b6f63b91d6bac5b3"
 dependencies = [
- "rustc_version",
+ "rustc_version 0.2.3",
 ]
 
 [[package]]
@@ -227,9 +228,9 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "clang-sys"
-version = "1.3.1"
+version = "1.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4cc00842eed744b858222c4c9faf7243aafc6d33f92f96935263ef4d8a41ce21"
+checksum = "5a050e2153c5be08febd6734e29298e844fdb0fa21aeddd63b4eb7baa106c69b"
 dependencies = [
  "glob",
  "libc",
@@ -363,11 +364,12 @@ dependencies = [
 
 [[package]]
 name = "heapless"
-version = "0.7.10"
-source = "git+https://github.com/mutantbob/heapless.git#84600244d9c5505f65a315667dcf86a6f08445b4"
+version = "0.7.13"
+source = "git+https://github.com/mutantbob/heapless.git#3b9b9f754826ea7b81b9f506b2da4b5b31b6963a"
 dependencies = [
  "atomic-polyfill",
  "hash32",
+ "rustc_version 0.4.0",
  "spin",
  "stable_deref_trait",
 ]
@@ -401,9 +403,9 @@ checksum = "830d08ce1d1d941e6b30645f1a0eb5643013d835ce3779a5fc208261dbe10f55"
 
 [[package]]
 name = "libc"
-version = "0.2.124"
+version = "0.2.126"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "21a41fed9d98f27ab1c6d161da622a4fa35e8a54a8adc24bbf3ddd0ef70b0e50"
+checksum = "349d5a591cd28b49e1d1037471617a32ddcda5731b99419008085f72d5a53836"
 
 [[package]]
 name = "libloading"
@@ -427,18 +429,18 @@ dependencies = [
 
 [[package]]
 name = "log"
-version = "0.4.16"
+version = "0.4.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6389c490849ff5bc16be905ae24bc913a9c8892e19b2341dbc175e14c341c2b8"
+checksum = "abb12e687cfb44aa40f41fc3978ef76448f9b6038cad6aef4259d3c095a2382e"
 dependencies = [
  "cfg-if 1.0.0",
 ]
 
 [[package]]
 name = "memchr"
-version = "2.4.1"
+version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "308cc39be01b73d0d18f82a0e7b2a3df85245f84af96fdddc5d202d27e47b86a"
+checksum = "2dffe52ecf27772e601905b7522cb4ef790d2cc203488bbd0e2fe85fcb74566d"
 
 [[package]]
 name = "minimal-lexical"
@@ -503,11 +505,11 @@ checksum = "dbf0c48bc1d91375ae5c3cd81e3722dff1abcf81a30960240640d223f59fe0e5"
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.37"
+version = "1.0.39"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ec757218438d5fda206afc041538b2f6d889286160d649a86a24d37e1235afd1"
+checksum = "c54b25569025b7fc9651de43004ae593a75ad88543b17178aa5e1b9c4f15f56f"
 dependencies = [
- "unicode-xid",
+ "unicode-ident",
 ]
 
 [[package]]
@@ -521,9 +523,9 @@ dependencies = [
 
 [[package]]
 name = "regex"
-version = "1.5.5"
+version = "1.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a11647b6b25ff05a515cb92c365cec08801e83423a235b51e231e1808747286"
+checksum = "d83f127d94bdbcda4c8cc2e50f6f84f4b611f69c902699ca385a39c3a75f9ff1"
 dependencies = [
  "aho-corasick",
  "memchr",
@@ -532,9 +534,9 @@ dependencies = [
 
 [[package]]
 name = "regex-syntax"
-version = "0.6.25"
+version = "0.6.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f497285884f3fcff424ffc933e56d7cbca511def0c9831a7f9b5f6153e3cc89b"
+checksum = "49b3de9ec5dc0a3417da371aab17d729997c15010e7fd24ff707773a33bddb64"
 
 [[package]]
 name = "riscv"
@@ -560,7 +562,7 @@ dependencies = [
 [[package]]
 name = "rust-arduino-helpers"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#211d2a6c5625430ab4610bfb2ae50a8e3379bcb6"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#ba4998977b71d49f3bb4c8165a5260d1ff495af7"
 dependencies = [
  "atmega-hal",
  "embedded-hal",
@@ -571,7 +573,7 @@ dependencies = [
 [[package]]
 name = "rust-arduino-runtime"
 version = "0.1.0"
-source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#211d2a6c5625430ab4610bfb2ae50a8e3379bcb6"
+source = "git+https://github.com/mutantbob/rust-arduino-helpers.git?branch=2022-mar-kludge#ba4998977b71d49f3bb4c8165a5260d1ff495af7"
 dependencies = [
  "arduino-build-helpers",
  "avr-progmem",
@@ -592,8 +594,23 @@ version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "138e3e0acb6c9fb258b19b67cb8abd63c00679d2851805ea151465464fe9030a"
 dependencies = [
- "semver",
+ "semver 0.9.0",
 ]
+
+[[package]]
+name = "rustc_version"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bfa0f585226d2e68097d4f95d113b15b83a82e819ab25717ec0590d9584ef366"
+dependencies = [
+ "semver 1.0.9",
+]
+
+[[package]]
+name = "rustversion"
+version = "1.0.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f2cc38e8fa666e2de3c4aba7edeb5ffc5246c1c2ed0e3d17e560aeeba736b23f"
 
 [[package]]
 name = "scopeguard"
@@ -609,6 +626,12 @@ checksum = "1d7eb9ef2c18661902cc47e535f9bc51b78acd254da71d375c2f6720d9a40403"
 dependencies = [
  "semver-parser",
 ]
+
+[[package]]
+name = "semver"
+version = "1.0.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8cb243bdfdb5936c8dc3c45762a19d12ab4550cdc753bc247637d4ec35a040fd"
 
 [[package]]
 name = "semver-parser"
@@ -645,13 +668,13 @@ checksum = "8ea5119cdb4c55b55d432abb513a0429384878c15dde60cc77b1c99de1a95a6a"
 
 [[package]]
 name = "syn"
-version = "1.0.91"
+version = "1.0.95"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b683b2b825c8eef438b77c36a06dc262294da3d5a5813fac20da149241dcd44d"
+checksum = "fbaf6116ab8924f39d52792136fb74fd60a80194cf1b1c6ffa6453eef1c3f942"
 dependencies = [
  "proc-macro2",
  "quote",
- "unicode-xid",
+ "unicode-ident",
 ]
 
 [[package]]
@@ -699,16 +722,16 @@ version = "0.1.0"
 source = "git+https://github.com/mrk-its/ufmt.git?branch=ptr_width_16_fix#e6e574625e89bce9a5cb907eae43bfd45672f768"
 
 [[package]]
+name = "unicode-ident"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d22af068fba1eb5edcb4aea19d382b2a3deb4c8f9d475c589b6ada9e0fd493ee"
+
+[[package]]
 name = "unicode-width"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3ed742d4ea2bd1176e236172c8429aaf54486e7ac098db29ffe6529e0ce50973"
-
-[[package]]
-name = "unicode-xid"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8ccb82d61f80a663efe1f787a51b16b5a51e3314d6ac365b08639f52387b33f3"
 
 [[package]]
 name = "vcell"

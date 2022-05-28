@@ -19,7 +19,8 @@ git="https://github.com/mutantbob/arduino-spi.git"
 #avr-hal-generic = {git="https://github.com/rahix/avr-hal", rev="f84c0dff774c2292bc932b670955165161ecc7d1"}
 [dependencies.avr-hal-generic]
 git = "https://github.com/rahix/avr-hal"
-rev = "f84c0dff774c2292bc932b670955165161ecc7d1"
+rev = "d0d2f243bd3e10b49f6a78d44839a6caa8be7d43"
+#rev = "f84c0dff774c2292bc932b670955165161ecc7d1"
 
 [dependencies.rust-arduino-helpers]
 #path="../../rust-arduino-helpers"
@@ -28,7 +29,8 @@ branch="2022-mar-kludge"
 
 [dependencies.arduino-hal]
 git = "https://github.com/rahix/avr-hal"
-rev = "f84c0dff774c2292bc932b670955165161ecc7d1"
+rev = "d0d2f243bd3e10b49f6a78d44839a6caa8be7d43"
+#rev = "f84c0dff774c2292bc932b670955165161ecc7d1"
 
 [build-dependencies]
 bindgen="*"
