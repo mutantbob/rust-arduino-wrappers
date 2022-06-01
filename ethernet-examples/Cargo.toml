@@ -58,3 +58,7 @@ ufmt = { git = "https://github.com/mrk-its/ufmt.git", branch="ptr_width_16_fix" 
 cty = { git="https://github.com/mutantbob/cty.git", branch="2022-Feb-avr" , default-features=false }
 heapless = { git = "https://github.com/mutantbob/heapless.git" }
 avr-progmem = { git="https://github.com/Cryptjar/avr-progmem-rs.git", branch="v0.3"}
+
+critical-section = {git="https://github.com/embassy-rs/critical-section.git" }
+atomic-polyfill = { git="https://github.com/mutantbob/atomic-polyfill.git", branch="main" }
+#atomic-polyfill = { path="../../atomic-polyfill" }
