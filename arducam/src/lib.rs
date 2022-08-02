@@ -44,8 +44,13 @@ impl<P: NumberedPin + PinOps> ArduCamOV5642<P> {
     ///```
     /// unsafe {
     ///     arducam::raw::wire::Wire.begin();
-    ///     ethernet::raw::SPIClass::begin();
     /// }
+    /// let spi_settings = Settings {
+    ///     data_order: arduino_spi::DataOrder::MostSignificantFirst,
+    ///     clock: arduino_spi::SerialClockRate::OscfOver2,
+    ///     mode: embedded_hal::spi::MODE_0,
+    /// };
+    /// let mut spi = default_spi!(dp, pins, spi_settings);
     /// ```
     pub fn new(cs_pin: Pin<Output, P>) -> ArduCamOV5642<P> {
         let model = raw::OV5642 as u8;
@@ -102,11 +107,48 @@ impl<P: NumberedPin + PinOps> ArduCamOV5642<P> {
         unsafe { self.inner.set_format(fmt as u8) }
     }
 
+    pub fn set_format_control(&mut self, fmt: CameraFormatControl) -> u8 {
+        unsafe { self.inner.wrSensorReg16_8(0x4300, fmt as cty::c_int) }
+    }
+
     pub fn init_cam(&mut self) {
         unsafe { self.inner.InitCAM() }
     }
     pub fn set_jpeg_size(&mut self, size: JPEGSize) {
         unsafe { self.inner.OV5642_set_JPEG_size(size as u8) }
+    }
+
+    pub fn set_raw_size(&mut self, size: JPEGSize) {
+        unsafe { self.inner.OV5642_set_RAW_size(size as u8) }
+    }
+
+    pub unsafe fn set_register_pair(&mut self, regid1: i16, regid2: i16, word: u16) {
+        self.inner.wrSensorReg16_8(regid1, (word >> 8) as i16);
+        self.inner.wrSensorReg16_8(regid2, (word & 0xff) as i16);
+    }
+
+    pub fn set_dvp_output_size(&mut self, width: u16, height: u16) {
+        unsafe {
+            self.inner.wrSensorReg16_8(0x3808, (width >> 8) as i16);
+            self.inner.wrSensorReg16_8(0x3809, (width & 0xff) as i16);
+            self.inner.wrSensorReg16_8(0x380a, (height >> 8) as i16);
+            self.inner.wrSensorReg16_8(0x380b, (height & 0xff) as i16);
+        }
+    }
+
+    pub fn set_averaging_window(
+        &mut self,
+        x_min: u16,
+        after_x_max: u16,
+        y_min: u16,
+        after_y_max: u16,
+    ) {
+        unsafe {
+            self.set_register_pair(0x5680, 0x5681, x_min);
+            self.set_register_pair(0x5682, 0x5683, after_x_max);
+            self.set_register_pair(0x5684, 0x5685, y_min);
+            self.set_register_pair(0x5686, 0x5687, after_y_max);
+        }
     }
 
     pub fn read_fifo_length(&mut self) -> u32 {
@@ -234,6 +276,25 @@ pub enum CameraFormat {
     Raw = raw::RAW as isize,
 }
 
+/// https://www.uctronics.com/download/cam_module/OV5642DS.pdf
+/// table 6-6
+/// register 0x4300 FORMAT_CONTROL_00
+pub enum CameraFormatControl {
+    RawBGGR = 0,
+    R8G8B8 = 0x23,
+
+    B5G6R5 = 0x60,
+    R5G6B5 = 0x61,
+    G5R6G5 = 0x62,
+    B5R6G6 = 0x63,
+    G5B6R5 = 0x64,
+    R5B6G5 = 0x65,
+    #[allow(non_camel_case_types)]
+    g3B5R5G3 = 0x6f,
+
+    BypassRaw = 0xf8,
+}
+
 pub enum JPEGSize {
     R320x240 = raw::OV5642_320x240 as isize,
     R640x480 = raw::OV5642_640x480 as isize,
@@ -245,6 +306,22 @@ pub enum JPEGSize {
     R1920x1080 = raw::OV5642_1920x1080 as isize,
 }
 
+impl JPEGSize {
+    pub fn raw_byte_count(&self) -> u32 {
+        let pixels = match self {
+            JPEGSize::R320x240 => 320 * 240,
+            JPEGSize::R640x480 => 640 * 480,
+            JPEGSize::R1024x768 => 1024 * 768,
+            JPEGSize::R1280x960 => 1280 * 960,
+            JPEGSize::R1600x1200 => 1600 * 1200,
+            JPEGSize::R2048x1536 => 2048 * 1536,
+            JPEGSize::R2592x1944 => 2592 * 1944,
+            JPEGSize::R1920x1080 => 1920 * 1080,
+        };
+
+        3 * pixels
+    }
+}
 /// for use with ARDUCHIP_TIM register
 pub enum TimingMask {
     HRefPolariy = raw::HREF_LEVEL_MASK as isize,

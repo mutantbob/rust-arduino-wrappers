@@ -5,7 +5,7 @@ edition = "2018"
 
 [features]
 board-selected=[]
-arduino-uno = [ "board-selected", "arduino-hal/arduino-uno", "arduino-spi/atmega328p" ]
+arduino-uno = [ "board-selected", "arduino-hal/arduino-uno", "arduino-spi/atmega328p", "rust-arduino-helpers/atmega328p" ]
 arduino-mega2560 = [ "board-selected", "arduino-hal/arduino-mega2560", "arduino-spi/atmega2560" ]
 
 [dependencies]
